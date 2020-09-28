@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, { useContext } from 'react';
 import { View, StyleSheet } from 'react-native'
 import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
 import {
@@ -38,7 +38,7 @@ export default function DrawerComponent(props) {
 
             <View style={styles.row}>
               <View style={styles.section}>
-                
+
               </View>
             </View>
           </View>
@@ -65,7 +65,19 @@ export default function DrawerComponent(props) {
                 />
               )}
               label="Perfil"
-              onPress={ () => { props.navigation.navigate('Profile') }}
+              onPress={() => { props.navigation.navigate('Profile') }}
+            />
+
+            <DrawerItem
+              icon={({ color, size }) => (
+                <Icon
+                  name="calendar"
+                  color={color}
+                  size={size}
+                />
+              )}
+              label="Agendamentos"
+              onPress={() => { props.navigation.navigate('Profile') }}
             />
           </Drawer.Section>
         </View>
