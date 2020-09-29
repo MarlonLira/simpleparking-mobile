@@ -55,7 +55,7 @@ function* getDataUser(action) {
   try {
 
     const id = action.payload;
-    const respone = yield call(getApi.get, `/user/id/${id}`);
+    const respone = yield call(getApi.get, `/user/${id}`);
     yield put(ProfileActions.dataUser(respone.data.result));
 
   } catch (error) {

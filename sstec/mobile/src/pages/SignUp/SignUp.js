@@ -127,13 +127,11 @@ const SignUp = ({ navigation }) => {
       password != '' &&
       confirmPassword != '') {
       let values = {
-        "user": {
           name,
           registryCode: RemoveMask(registryCode, Type.CPF),
           phone: RemoveMask(phone, Type.PHONE),
           email,
           password,
-        }
       }
 
       signUp(values, 'post').then(() => {

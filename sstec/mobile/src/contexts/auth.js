@@ -36,6 +36,7 @@ function AuthProvider({ children }) {
   }
 
   async function signin(values, method) {
+    console.log(values)
     await axios[method](`${AUTH_URL}/user/signin/`, values)
       .then((request) => {
         insertUser(Decrypt(request.data.result));
