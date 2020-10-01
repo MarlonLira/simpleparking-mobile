@@ -79,18 +79,14 @@ const Car = ({ route }) => {
 
   const handleSubmit = () => {
     const values = {
-      vehicle: {
         model: model,
         color: color,
         type: type,
         licensePlate: licensePlate,
         userId: profile.dataUser.id,
         id: idCar
-      }
     };
-
-    // console.log(car.onEdit);
-
+    
     !car.onEdit ?
       dispatch(CarActions.carInclude(values)) :
       dispatch(CarActions.carEditItem(values));

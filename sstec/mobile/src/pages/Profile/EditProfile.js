@@ -46,12 +46,10 @@ const EditProfile = () => {
   const handleSubmit = () => {
 
     var values = {
-      user: {
         id: profile.dataUser.id,
         name: name,
         email: email,
         phone: RemoveMask(phone, Type.PHONE),
-      }
     };
 
     dispatch(ProfileActions.editRequest(values));

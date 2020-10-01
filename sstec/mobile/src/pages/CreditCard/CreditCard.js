@@ -93,18 +93,18 @@ const CreditCard = ({ route }) => {
   };
 
   const handleSubmit = () => {
-    var values = { card: {} };
+    var values = {};
 
     if (!creditCard.onEdit) {
-      values.card = {
+      values = {
         number: RemoveMask(number, Type.CARD),
         type: "credit",
         flag: flag,
       }
     };
 
-    values.card = {
-      ...values.card,
+    values = {
+      ...values,
       holder: holder,
       expirationDate: expiry,
       secureCode: security,

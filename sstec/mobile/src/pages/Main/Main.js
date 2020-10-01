@@ -5,11 +5,12 @@ import {
   Dimensions,
   StyleSheet,
   PermissionsAndroid,
-  ActivityIndicator
 } from 'react-native';
 import MapView, { Marker, Callout } from 'react-native-maps';;
 import Geolocation from 'react-native-geolocation-service'
 import { useNavigation } from '@react-navigation/native'
+import { useSelector, useDispatch } from 'react-redux';
+import { Creators as MapActions } from '../../store/ducks/map';
 
 const GOOGLE_MAPS_APIKEY = 'AIzaSyBrGTfBFa0mZ9303uZOuvW-xYxHXtHRs2k';
 const backgroundColor = '#007256';
@@ -18,11 +19,13 @@ const { height, width } = Dimensions.get('window');
 export default function Main() {
 
   const [hasLocationPermission, setHasLocationPermission] = useState(false);
-  const [userPosition, setUserPosition] = useState({ latitude: -8.0273777, longitude: -34.9067233});
+  const [userPosition, setUserPosition] = useState({ latitude: -8.028396, longitude: -34.907355 });
   const [renderMapState, setRenderMapState] = useState(true);
 
-  const navigation = useNavigation();
+  const dispatch = useDispatch();
+  const { map } = useSelector(state => state);
 
+  const navigation = useNavigation();
 
   async function verifyLocationPermission() {
     try {
@@ -40,10 +43,14 @@ export default function Main() {
   }
 
   useEffect(() => {
+    dispatch(MapActions.mapRequest());
+  }, []);
+
+  useEffect(() => {
     verifyLocationPermission();
 
     if (hasLocationPermission) {
-     getCoordinate();
+      getCoordinate();
     }
   }, [hasLocationPermission]);
 
@@ -62,6 +69,29 @@ export default function Main() {
       };
   }
 
+  function RenderMarker() {
+    let parkings = [{coordinate: { latitude: -8.028962, longitude: -34.907334, }, name: 'Seu z'},
+    {coordinate: { latitude: -8.029470, longitude: -34.907348 }, name: 'Seu A'},
+    {coordinate: { latitude: -8.028771, longitude: -34.907174 }, name: 'Seu B'},]
+    return (
+      parkings.map(parking => {
+        return (
+          <MapView.Marker key={parking.coordinate.latitude} coordinate={parking.coordinate}>
+            <Callout tooltip onPress={() => { }}>
+              <View>
+                <View style={styles.bubble}>
+                  <Text style={styles.name}>{parking.name}</Text>
+                </View>
+                <View style={styles.arrowBorder} />
+                <View style={styles.arrow} />
+              </View>
+            </Callout>
+          </MapView.Marker>
+        )
+      })
+    );
+  };
+
   function RenderMap() {
     return (
       <MapView
@@ -77,6 +107,7 @@ export default function Main() {
         loadingEnabled={true}
         toolbarEnabled={true}
         zoomControlEnabled={true}
+        key={GOOGLE_MAPS_APIKEY}
 
       >
         <MapView.Marker coordinate={userPosition}>
@@ -90,6 +121,8 @@ export default function Main() {
             </View>
           </Callout>
         </MapView.Marker>
+
+        <RenderMarker />
       </MapView>
     )
   };

@@ -41,7 +41,7 @@ function* editUser(action) {
     const response = yield call(getApi.put, `/user/`, values);
     yield put(ProfileActions.editSuccess());
     yield put(ProfileActions.offEdit());
-    yield put(ProfileActions.getUserRequest(values.user.id));
+    yield put(ProfileActions.getUserRequest(values.id));
 
     AlertDialog('Sucesso', 'Alteração realizada!', ['OK']);
 
@@ -215,7 +215,8 @@ function* editCar(action) {
  */
 function* getParkings(action) {
   try {
-    
+    const response = yield call(getApi.get, `/parkings/`);
+    yield put(MapActions.mapData(response.data.result));
   } catch (error) {
     AlertDialog('Erro', error.response.data.message, ['OK']);
   }
