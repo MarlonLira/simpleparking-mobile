@@ -73,5 +73,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.41,
     shadowRadius: 9.11,
     elevation: 14,
+    marginTop: Platform.OS === 'ios' ? 9 : 4.5,
   }
 });

@@ -5,27 +5,96 @@ import {
   Dimensions,
   StyleSheet,
   PermissionsAndroid,
+  TextInput,
+  Animated,
+  Image,
+  Platform,
+  TouchableOpacity
 } from 'react-native';
-import MapView, { Marker, Callout } from 'react-native-maps';;
+import MapView, { Marker, Callout, PROVIDER_GOOGLE } from 'react-native-maps';;
 import Geolocation from 'react-native-geolocation-service'
 import { useNavigation } from '@react-navigation/native'
 import { useSelector, useDispatch } from 'react-redux';
 import { Creators as MapActions } from '../../store/ducks/map';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const GOOGLE_MAPS_APIKEY = 'AIzaSyBrGTfBFa0mZ9303uZOuvW-xYxHXtHRs2k';
 const backgroundColor = '#007256';
 const { height, width } = Dimensions.get('window');
+const CARD_HEIGHT = 220;
+const CARD_WIDTH = width * 0.8;
+const SPACING_FOR_CARD_INSET = width * 0.1 - 10;
+
 
 export default function Main() {
 
   const [hasLocationPermission, setHasLocationPermission] = useState(false);
   const [userPosition, setUserPosition] = useState({ latitude: -8.028396, longitude: -34.907355 });
-  const [renderMapState, setRenderMapState] = useState(true);
+  const [parkings, setParkings] = useState([]);
+  const [coordinate, setCoordinate] = useState([]);
 
   const dispatch = useDispatch();
   const { map } = useSelector(state => state);
-
   const navigation = useNavigation();
+  const _map = React.useRef(null);
+
+  let mapIndex = 0;
+  let mapAnimation = new Animated.Value(0);
+  const _scrollView = React.useRef(null);
+
+  useEffect(() => {
+    mapAnimation.addListener(({ value }) => {
+      let index = Math.floor(value / CARD_WIDTH + 0.3);
+      if (index >= parkings.length) {
+        index = parkings.length - 1;
+      }
+      if (index <= 0) {
+        index = 0;
+      }
+
+      clearTimeout(regionTimeout);
+
+      const regionTimeout = setTimeout(() => {
+        if (mapIndex != index) {
+          mapIndex = index;
+          const latitude  = coordinate[index].latitude;
+          const longitude = coordinate[index].longitude;
+          const region = {latitude: parseFloat(latitude), longitude: parseFloat(longitude)}
+          _map.current.animateToRegion(
+            {
+              ...region,
+              latitudeDelta: 0.0043,
+              longitudeDelta: 0.0034,
+            },
+            350
+          );
+        }
+      }, 10)
+    });
+  });
+
+  const getInfoRegion = () => {
+    let result = [];
+    for (var i in parkings)
+      result.push(parkings[i].address);
+
+    setCoordinate(result);
+  };
+
+  const interpolations = parkings.map((parking, index) => {
+    const inputRange = [
+      (index - 1) * CARD_WIDTH,
+      index * CARD_WIDTH,
+      ((index + 1) * CARD_WIDTH),
+    ];
+
+    const scale = mapAnimation.interpolate({
+      inputRange,
+      outputRange: [1, 1.5, 1],
+      extrapolate: "clamp"
+    });
+    return { scale };
+  });
 
   async function verifyLocationPermission() {
     try {
@@ -43,14 +112,11 @@ export default function Main() {
   }
 
   useEffect(() => {
-    dispatch(MapActions.mapRequest());
-  }, []);
-
-  useEffect(() => {
     verifyLocationPermission();
 
     if (hasLocationPermission) {
       getCoordinate();
+      dispatch(MapActions.mapRequest());
     }
   }, [hasLocationPermission]);
 
@@ -60,32 +126,53 @@ export default function Main() {
         latitude: position.coords.latitude,
         longitude: position.coords.longitude
       });
-
-      setRenderMapState(true);
-
     }),
       error => {
         console.log(error.code, error.message)
       };
   }
 
+  useEffect(() => {
+    if (map.getDataSuccess){
+      setParkings(map.parkings);
+    }
+  }, [map.getDataSuccess]);
+
+  useEffect(() => {
+    getInfoRegion();
+  }, [parkings])
+
+  function onMarkerPress(mapEventData) {
+    const markerID = mapEventData._targetInst.return.key;
+
+    let x = (markerID * CARD_WIDTH) + (markerID * 20);
+    if (Platform.OS === 'ios') {
+      x = x - SPACING_FOR_CARD_INSET;
+    }
+
+    _scrollView.current.scrollTo({ x: x, y: 0, animated: true });
+  }
+
   function RenderMarker() {
-    let parkings = [{coordinate: { latitude: -8.028962, longitude: -34.907334, }, name: 'Seu z'},
-    {coordinate: { latitude: -8.029470, longitude: -34.907348 }, name: 'Seu A'},
-    {coordinate: { latitude: -8.028771, longitude: -34.907174 }, name: 'Seu B'},]
     return (
-      parkings.map(parking => {
+      parkings == [] ? null : parkings.map((parking, index) => {
+        const scaleStyle = {
+          transform: [
+            {
+              scale: interpolations[index].scale
+            }
+          ]
+        }
+        let locale = { latitude: parseFloat(parking.address.latitude), longitude: parseFloat(parking.address.longitude) }
         return (
-          <MapView.Marker key={parking.coordinate.latitude} coordinate={parking.coordinate}>
-            <Callout tooltip onPress={() => { }}>
-              <View>
-                <View style={styles.bubble}>
-                  <Text style={styles.name}>{parking.name}</Text>
-                </View>
-                <View style={styles.arrowBorder} />
-                <View style={styles.arrow} />
-              </View>
-            </Callout>
+          <MapView.Marker key={index} coordinate={locale} onPress={(e) => onMarkerPress(e)}>
+            <Animated.View style={[styles.markerWrap]}>
+              <Animated.Image
+                source={require('../../Images/marker.png')}
+                style={[styles.marker, scaleStyle]}
+              >
+              </Animated.Image>
+            </Animated.View>
           </MapView.Marker>
         )
       })
@@ -93,6 +180,7 @@ export default function Main() {
   };
 
   function RenderMap() {
+
     return (
       <MapView
         style={styles.map}
@@ -108,7 +196,7 @@ export default function Main() {
         toolbarEnabled={true}
         zoomControlEnabled={true}
         key={GOOGLE_MAPS_APIKEY}
-
+        ref={_map}
       >
         <MapView.Marker coordinate={userPosition}>
           <Callout tooltip onPress={() => { }}>
@@ -127,12 +215,88 @@ export default function Main() {
     )
   };
 
+  function RenderScroll() {
+    return (
+      <Animated.ScrollView
+        ref={_scrollView}
+        horizontal
+        pagingEnabled
+        scrollEventThrottle={1}
+        showsHorizontalScrollIndicator={false}
+        snapToInterval={CARD_WIDTH + 20}
+        snapToAlignment="center"
+        style={styles.scrollView}
+        contentInset={{
+          top: 0,
+          left: SPACING_FOR_CARD_INSET,
+          bottom: 0,
+          right: SPACING_FOR_CARD_INSET
+        }}
+        contentContainerStyle={{
+          paddingHorizontal: Platform.OS === 'android' ? SPACING_FOR_CARD_INSET : 0
+        }}
+        onScroll={Animated.event(
+          [
+            {
+              nativeEvent: {
+                contentOffset: {
+                  x: mapAnimation,
+                }
+              },
+            },
+          ],
+          { useNativeDriver: true }
+        )}
+      >
+        {parkings == [] ? null : parkings.map((parking, index) => {
+          return (
+            <View style={styles.card} key={index}>
+              <Image
+                source={{
+                  uri: 'https://api.adorable.io/avatars/285/abott@adorable.png',
+                }}
+                style={styles.cardImage}
+                resizeMode="cover"
+              />
+              <View style={styles.textContent}>
+                <Text numberOfLines={1} style={styles.cardtitle} >{parking.name}</Text>
+                <Text numberOfLines={1} style={styles.cardDescription} >{parking.name}</Text>
+                <View style={styles.button}>
+                  <TouchableOpacity
+                    onPress={() => { }}
+                    style={styles.signIn}
+                  >
+                    <Text
+                      style={styles.textSign}
+                    >
+                      Agende agora</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          )
+        })
+        }
+      </Animated.ScrollView>
+    )
+  }
+
   return (
     <View style={styles.container}>
-      {renderMapState ?
-        <RenderMap />
-        : null
-      }
+
+      {/* <View style={styles.searchBox}>
+        <TextInput
+          placeholder="Buscar estacionamentos"
+          placeholderTextColor="#666666"
+          style={{ flex: 1, padding: 0 }}
+        />
+        <Icon name="ios-search" size={20} color="#59578e" />
+      </View> */}
+
+      <RenderMap />
+
+      <RenderScroll />
+
     </View>
   )
 };
@@ -141,8 +305,6 @@ const styles = StyleSheet.create({
 
   container: {
     flex: 1,
-    justifyContent: 'flex-end',
-    alignItems: 'flex-end',
   },
 
   map: {
@@ -187,4 +349,89 @@ const styles = StyleSheet.create({
     marginTop: -32
   },
 
+  searchBox: {
+    position: 'absolute',
+    marginTop: Platform.OS === 'ios' ? 40 : 20,
+    flexDirection: "row",
+    backgroundColor: '#fff',
+    width: '60%',
+    alignSelf: 'center',
+    borderRadius: 5,
+    padding: 10,
+    shadowColor: '#ccc',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.5,
+    shadowRadius: 5,
+    elevation: 10,
+    alignItems: 'center',
+  },
+  scrollView: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    paddingVertical: 10,
+  },
+  card: {
+    padding: 10,
+    elevation: 2,
+    backgroundColor: "#FFF",
+    borderTopLeftRadius: 5,
+    borderTopRightRadius: 5,
+    marginHorizontal: 10,
+    shadowColor: "#000",
+    shadowRadius: 5,
+    shadowOpacity: 0.3,
+    shadowOffset: { x: 2, y: -2 },
+    height: CARD_HEIGHT,
+    width: CARD_WIDTH,
+    overflow: "hidden",
+  },
+  cardImage: {
+    flex: 3,
+    width: "100%",
+    height: "100%",
+    alignSelf: "center",
+  },
+  textContent: {
+    flex: 2,
+    padding: 10,
+  },
+  cardtitle: {
+    fontSize: 12,
+    fontWeight: "bold",
+  },
+  cardDescription: {
+    fontSize: 12,
+    color: "#444",
+  },
+  button: {
+    alignItems: 'center',
+    marginTop: 5,
+    width: '100%'
+  },
+  signIn: {
+    width: 300,
+    padding: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 3,
+    borderColor: '#59578e',
+    borderWidth: 1,
+  },
+  textSign: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#59578e'
+  },
+  marker: {
+    width: 40,
+    height: 40,
+  },
+  markerWrap: {
+    alignItems: "center",
+    justifyContent: "center",
+    width: 60,
+    height: 60,
+  },
 });

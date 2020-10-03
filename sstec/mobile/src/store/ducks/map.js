@@ -11,6 +11,7 @@ export const Types = {
 const INITIAL_STATE = {
   parkings: [],
   request: false,
+  getDataSuccess: false,
 };
 
 export default function map(state = INITIAL_STATE , action) {
@@ -18,7 +19,7 @@ export default function map(state = INITIAL_STATE , action) {
     case Types.MAP_REQUEST:
       return { ...state, request: true };
     case Types.MAP_DATA:
-      return { ...state, parkings: action.payload };
+      return { ...state, parkings: action.payload, getDataSuccess: true };
     default:
       return state;
   };
