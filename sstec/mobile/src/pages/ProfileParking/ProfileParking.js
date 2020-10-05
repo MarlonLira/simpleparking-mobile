@@ -130,8 +130,10 @@ export default function ProfileParking({ navigation, route }) {
 
             </View>
           </View>
-          <View style={[styles.section, styles.sectionLarge]}>
-            <Text style={styles.sectionContent} > Horários </Text>
+          <View style={styles.sectionLargeOffCenter}>
+            <View style={styles.overview}>
+              <Text style={styles.titleCharacter} > Características </Text>
+            </View>
           </View>
           <View style={[styles.section, styles.sectionLarge]}>
             <Text style={styles.sectionContent} > Horários </Text>
@@ -164,6 +166,11 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
+  },
+  titleCharacter: {
+    fontSize: 20,
+    marginTop: 10,
+    marginLeft: 10,
   },
   cardSpace: {
     padding: 12,
@@ -247,23 +254,28 @@ const styles = StyleSheet.create({
     minHeight: 300,
     justifyContent: "center"
   },
+  sectionLargeOffCenter: {
+    minHeight: 200,
+    borderBottomColor: '#cccccc',
+    borderBottomWidth: 1,
+  },
   indicator: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
   },
-  cardHandler: { 
-    backgroundColor: "#fff", 
-    flexDirection: "row", 
-    justifyContent: "space-between", 
-    marginTop: 5, 
-    alignItems: "flex-start", 
+  cardHandler: {
+    backgroundColor: "#fff",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 5,
+    alignItems: "flex-start",
   },
-  subCard: { 
-    flexDirection: "row", 
-    justifyContent: "space-between", 
-    marginTop: 10, 
-    alignItems: "flex-start", 
+  subCard: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 10,
+    alignItems: "flex-start",
     backgroundColor: '#fff',
   },
 });
