@@ -8,6 +8,7 @@ import { Creators as ProfileActions, Types as ProfileTypes } from '../ducks/prof
 import { Creators as CreditCardActions, Types as CreditCardTypes } from '../ducks/creditCard';
 import { Creators as CarActions, Types as CarTypes } from '../ducks/car';
 import { Creators as MapActions, Types as MapATypes } from '../ducks/map';
+import { Creators as ProfileParkingAction, Types as ProfileParkingTypes } from '../ducks/profileParking';
 
 
 export default function* rootSaga() {
@@ -26,7 +27,9 @@ export default function* rootSaga() {
     takeLatest(CarTypes.CAR_EDIT_ITEM, editCar),
 
     takeLatest(MapATypes.MAP_REQUEST, getParkings),
-    
+
+    takeLatest(ProfileParkingTypes.PROFILE_PARKING_REQUEST_SPACE, getParkingspace),
+
   ]);
 };
 
@@ -195,7 +198,7 @@ function* editCar(action) {
 
     const { profile } = yield select();
     const { values } = action.payload;
-    
+
     const request = yield call(getApi.put, '/vehicle/', values);
 
     yield put(CarActions.carEdiItemSuccess());
@@ -221,3 +224,18 @@ function* getParkings(action) {
     AlertDialog('Erro', error.response.data.message, ['OK']);
   }
 }
+
+/**
+ * Profile parking - Parking space
+ */
+function* getParkingspace(action) {
+  try {
+
+    const id = action.payload;
+    const respone = yield call(getApi.get, `/Parkingspace/parkingId/${id}`);
+    yield put(ProfileParkingAction.spaceData(respone.data.result));
+
+  } catch (error) {
+    AlertDialog('Erro', error.response.data.message, ['OK']);
+  };
+};

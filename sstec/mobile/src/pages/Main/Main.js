@@ -21,7 +21,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 const GOOGLE_MAPS_APIKEY = 'AIzaSyBrGTfBFa0mZ9303uZOuvW-xYxHXtHRs2k';
 const backgroundColor = '#007256';
 const { height, width } = Dimensions.get('window');
-const CARD_HEIGHT = 220;
+const CARD_HEIGHT = 250;
 const CARD_WIDTH = width * 0.8;
 const SPACING_FOR_CARD_INSET = width * 0.1 - 10;
 
@@ -57,9 +57,9 @@ export default function Main() {
       const regionTimeout = setTimeout(() => {
         if (mapIndex != index) {
           mapIndex = index;
-          const latitude  = coordinate[index].latitude;
+          const latitude = coordinate[index].latitude;
           const longitude = coordinate[index].longitude;
-          const region = {latitude: parseFloat(latitude), longitude: parseFloat(longitude)}
+          const region = { latitude: parseFloat(latitude), longitude: parseFloat(longitude) }
           _map.current.animateToRegion(
             {
               ...region,
@@ -115,8 +115,10 @@ export default function Main() {
     verifyLocationPermission();
 
     if (hasLocationPermission) {
-      getCoordinate();
-      dispatch(MapActions.mapRequest());
+      if (!map.getDataSuccess) {
+        getCoordinate();
+        dispatch(MapActions.mapRequest());
+      }
     }
   }, [hasLocationPermission]);
 
@@ -133,7 +135,7 @@ export default function Main() {
   }
 
   useEffect(() => {
-    if (map.getDataSuccess){
+    if (map.getDataSuccess) {
       setParkings(map.parkings);
     }
   }, [map.getDataSuccess]);
@@ -252,19 +254,19 @@ export default function Main() {
           return (
             <View style={styles.card} key={index}>
               <Image
-                source={{
-                  uri: 'https://api.adorable.io/avatars/285/abott@adorable.png',
-                }}
+                source={require('../../Images/parking.jpg')}
                 style={styles.cardImage}
                 resizeMode="cover"
               />
               <View style={styles.textContent}>
                 <Text numberOfLines={1} style={styles.cardtitle} >{parking.name}</Text>
                 <Text numberOfLines={1} style={styles.cardDescription} >{parking.name}</Text>
+                <Text numberOfLines={1} style={styles.cardDescription} >{parking.address.street + ', ' + parking.address.number + ', ' + parking.address.district}</Text>
                 <View style={styles.button}>
                   <TouchableOpacity
-                    onPress={() => { }}
+                    onPress={() => navigation.navigate('ProfileParking', { parking })}
                     style={styles.signIn}
+                    activeOpacity={0.2}
                   >
                     <Text
                       style={styles.textSign}

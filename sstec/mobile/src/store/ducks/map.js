@@ -17,7 +17,7 @@ const INITIAL_STATE = {
 export default function map(state = INITIAL_STATE , action) {
   switch (action.type) {
     case Types.MAP_REQUEST:
-      return { ...state, request: true };
+      return { ...state, request: true, getDataSuccess: false };
     case Types.MAP_DATA:
       return { ...state, parkings: action.payload, getDataSuccess: true };
     default:

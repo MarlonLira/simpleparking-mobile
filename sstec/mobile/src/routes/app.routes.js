@@ -11,6 +11,8 @@ import Map from '../pages/Map/Map'
 import Scheduling from '../pages/Scheduling/Scheduling';
 import DrawerComponent from '../screens/Drawer';
 import ProfileStackScrenn from '../screens/ProfileScreen';
+import ProfileParkingScreen from '../screens/ProfileParkingScreen';
+import ProfileParking from '../pages/ProfileParking/ProfileParking';
 
 const openScree = ({ navigation }) => (
   <StackCreate.Navigator>
@@ -51,9 +53,20 @@ export default function AppRoutes() {
       <StackCreate.Screen name="openScree" component={openScree} />
       <DrawerCreate.Screen name="Profile" component={ProfileStackScrenn} />
       <StackCreate.Screen name="Scheduling" component={Scheduling} />
+
+      <StackCreate.Screen 
+        name="ProfileParking" 
+        component={ProfileParking}
+        options={({route}) => ({
+          headerBackTitleVisible: false,
+          headerTitle: false,
+          headerTransparent: true,
+          headerTintColor: '#fff'
+        })}
+      />
     </DrawerCreate.Navigator>
   );
-}
+};
 
 const styles = StyleSheet.create({
   buttonHeader: {
