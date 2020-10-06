@@ -9,10 +9,15 @@ import {
   Dimensions,
   StatusBar,
   ActivityIndicator,
-  BackHandler
+  TouchableOpacity,
+  ScrollView,
 } from 'react-native'
+import ButtonComponent from '../../components/Button/';
 import HeaderImageScrollView, { TriggeringView } from 'react-native-image-header-scroll-view';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import Animated from 'react-native-reanimated';
+import BottomSheet from 'reanimated-bottom-sheet';
 
 import { Creators as ProfileParkingAction, Types as ProfileParkingTypes } from '../../store/ducks/profileParking';
 import { useDispatch, useSelector } from 'react-redux';
@@ -22,34 +27,65 @@ import * as Animatable from 'react-native-animatable';
 const MIN_HEIGHT = Platform.OS === 'ios' ? 90 : 90;
 const MAX_HEIGHT = 350;
 
-export default function ProfileParking({ navigation, route }) {
-
-  const [dataSpaces, setDataSpaces] = useState([]);
-  const [renderPage, setRenderPage] = useState(false);
+export default function ProfileParking({ route }) {
 
   const navTitleView = useRef(null);
   const dispatch = useDispatch();
   const { profileParking } = useSelector(state => state);
   const isFocused = useIsFocused();
+  const navigation = useNavigation();
+  const bs = React.createRef();
+  const fall = new Animated.Value(1);
+
+  const [selectedYear, setSelectedYear] = useState(0);
+  const [selectedMonth, setSelectedMonth] = useState(0);
+  const [selectedDay, setSelectedDay] = useState(0);
+  const [selectedHour, setSelectedHour] = useState(null);
 
   useEffect(() => {
-    if (typeof route.params.parking.id !== "undefined") {
-      dispatch(ProfileParkingAction.profileParkingRequestSpace(route.params.parking.id));
-    }
-  }, [route.params.parking.id]);
+
+  }, []);
 
   useEffect(() => {
-    if (profileParking.getDataSuccess) {
-      setDataSpaces(profileParking.spaces);
-    }
-  }, [profileParking.getDataSuccess]);
+    let today = new Date();
+    setSelectedYear(today.getFullYear());
+    setSelectedMonth(today.getMonth());
+    setSelectedDay(today.getDate());
+  }, []);
+
+  const months = [
+    'Janeiro',
+    'Fevereiro',
+    'Março',
+    'Abril',
+    'Maio',
+    'Junho',
+    'Julho',
+    'Agosto',
+    'Setembro',
+    'Outubro',
+    'Novembro',
+    'Dezembro',
+  ];
+
+  const days = [
+    'Dom',
+    'Seg',
+    'Ter',
+    'Quar',
+    'Qui',
+    'Sex',
+    'Sab',
+  ];
+
 
   useEffect(() => {
     if (!isFocused) {
       dispatch(ProfileParkingAction.exitScreen());
-      setDataSpaces([]);
+    } else if (typeof route.params.parking.id !== "undefined") {
+      dispatch(ProfileParkingAction.profileParkingRequestSpace(route.params.parking.id));
     }
-  }, [isFocused]);
+  }, [isFocused, route.params.parking.id]);
 
   const getTypeSpace = (type) => {
     switch (type) {
@@ -59,16 +95,78 @@ export default function ProfileParking({ navigation, route }) {
         return "Carro";
       case "BOTH":
         return "Ambos";
-    }
-  }
+    };
+  };
+
+  const handleLeftDateClick = () => {
+    let mountDate = new Date(selectedYear, selectedMonth, 1);
+    mountDate.setMonth(mountDate.getMonth() - 1);
+    setSelectedYear(mountDate.getFullYear());
+    setSelectedMonth(mountDate.getMonth());
+    setSelectedDay(1);
+  };
+
+  const handleRightDateClick = () => {
+    let mountDate = new Date(selectedYear, selectedMonth, 1);
+    mountDate.setMonth(mountDate.getMonth() + 1);
+    setSelectedYear(mountDate.getFullYear());
+    setSelectedMonth(mountDate.getMonth());
+    setSelectedDay(1);
+  };
+
+  const handleButton = () => {
+    bs.current.snapTo(0);
+  };
+
+  const renderHeader = () => (
+    <View style={styles.header}>
+      <View style={styles.panelHeader}>
+        <View style={styles.panelHandle}>
+
+        </View>
+      </View>
+    </View>
+  );
+
+  const renderInner = () => (
+    <View style={styles.panel}>
+      <View style={{ alignItems: 'center' }}>
+        <Text style={styles.panelTitle}> Agendamento </Text>
+        <Text style={styles.panelSubtitle}> Selecione os dados conforme desejar </Text>
+      </View>
+
+      <View style={styles.modalInfo}>
+        <View style={styles.dateInfo}>
+
+          <TouchableOpacity style={styles.datePrevArea} onPress={handleLeftDateClick}>
+            <MaterialIcons name="navigate-before" size={25} />
+          </TouchableOpacity>
+          <View style={styles.dateTitleArea}>
+            <Text style={styles.dateTitle}>{months[selectedMonth]} {selectedYear}</Text>
+          </View>
+          <TouchableOpacity style={styles.dateNextArea} onPress={handleRightDateClick}>
+            <MaterialIcons name="navigate-next" size={25} />
+          </TouchableOpacity>
+
+        </View>
+
+        <ScrollView style={styles.dateList} horizontal={true} showsHorizontalScrollIndicator={false}>
+
+        </ScrollView>
+
+      </View>
+
+      {/* <ButtonComponent text="Finalizar agendamento" /> */}
+    </View>
+  );
 
   const RenderSpaces = () => {
 
     return (
-      dataSpaces == [] ? null : dataSpaces.map((space, index) => (
+      profileParking.spaces == [] ? null : profileParking.spaces.map((space, index) => (
         <View key={index} style={[styles.cardSpace, styles.cardHandler]}>
           <Text style={[styles.sectionContent, styles.borderText]}>{getTypeSpace(space.type)}</Text>
-          <Text style={[styles.sectionContent, styles.borderText]}>R$ {space.value}</Text>
+          <Text style={[styles.sectionContent, styles.borderText]}>R$ {space.value.toFixed(2)}</Text>
           <Text style={[styles.sectionContent, styles.borderText]}>Vagas: {space.amount}</Text>
         </View>
       ))
@@ -114,9 +212,17 @@ export default function ProfileParking({ navigation, route }) {
               </View>
             </View>
           </TriggeringView>
+
+          <View style={styles.sectionButton}>
+            <ButtonComponent
+              text="Reservar"
+              onPress={handleButton}
+            />
+          </View>
+
           <View style={[styles.section, styles.sectionLarge]}>
 
-            <View style={[styles.cardSpace, { backgroundColor: '#59578e' }]}>
+            <View style={[styles.cardSpace, { backgroundColor: 'hsl(242,24%,80%)' }]}>
               <View style={{ alignItems: "center" }}>
                 <Text style={styles.titleSpaces}> Vagas disponíveis </Text>
               </View>
@@ -130,17 +236,54 @@ export default function ProfileParking({ navigation, route }) {
 
             </View>
           </View>
-          <View style={styles.sectionLargeOffCenter}>
-            <View style={styles.overview}>
-              <Text style={styles.titleCharacter} > Características </Text>
+
+          <View style={styles.section}>
+            <View style={styles.categories}>
+              <View style={styles.categoryContainer}>
+                <FontAwesome name="check-square-o" size={16} color='#fff' />
+                <Text style={styles.category}>Coberto</Text>
+              </View>
+              <View style={styles.categoryContainer}>
+                <FontAwesome name="check-square-o" size={16} color='#fff' />
+                <Text style={styles.category}>Segurança</Text>
+              </View>
+              <View style={styles.categoryContainer}>
+                <FontAwesome name="check-square-o" size={16} color='#fff' />
+                <Text style={styles.category}>Monitoramento</Text>
+              </View>
             </View>
           </View>
-          <View style={[styles.section, styles.sectionLarge]}>
-            <Text style={styles.sectionContent} > Horários </Text>
+
+          <View style={[styles.section, styles.sectionLargeOffCenter]}>
+            <Text style={styles.sectionContent}>Avaliações</Text>
+            <View style={styles.cardAppraisal}>
+              <Text>Relampago Marquinhos ⭐⭐⭐⭐⭐ </Text>
+              <Text>Ótimo atendimento e ótimo ambiente</Text>
+            </View>
+            <View style={styles.cardAppraisal}>
+              <Text>Relampago Marquinhos ⭐⭐⭐⭐⭐ </Text>
+              <Text>Ótimo atendimento e ótimo ambiente</Text>
+            </View>
+            <View style={styles.cardAppraisal}>
+              <Text>Relampago Marquinhos ⭐⭐⭐⭐⭐ </Text>
+              <Text>Ótimo atendimento e ótimo ambiente</Text>
+            </View>
           </View>
 
         </HeaderImageScrollView>
+
       }
+
+      <BottomSheet
+        ref={bs}
+        snapPoints={[600, 0]}
+        renderContent={renderInner}
+        renderHeader={renderHeader}
+        initialSnap={1}
+        callbackNode={fall}
+        enabledGestureInteraction={true}
+      />
+
     </SafeAreaView >
   )
 };
@@ -186,7 +329,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     alignItems: "center",
     fontWeight: 'bold',
-    color: '#fff'
+    color: '#59578e'
   },
   name: {
     fontWeight: 'bold',
@@ -196,6 +339,9 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#cccccc',
     backgroundColor: 'white',
+  },
+  sectionButton: {
+
   },
   sectionTitle: {
     fontSize: 18,
@@ -216,7 +362,7 @@ const styles = StyleSheet.create({
   },
   categoryContainer: {
     flexDirection: 'row',
-    backgroundColor: '#FF6347',
+    backgroundColor: '#59578e',
     borderRadius: 20,
     margin: 10,
     padding: 10,
@@ -252,10 +398,9 @@ const styles = StyleSheet.create({
   },
   sectionLarge: {
     minHeight: 300,
-    justifyContent: "center"
   },
   sectionLargeOffCenter: {
-    minHeight: 200,
+    minHeight: 300,
     borderBottomColor: '#cccccc',
     borderBottomWidth: 1,
   },
@@ -277,5 +422,81 @@ const styles = StyleSheet.create({
     marginTop: 10,
     alignItems: "flex-start",
     backgroundColor: '#fff',
+  },
+  cardAppraisal: {
+    borderWidth: 1,
+    borderColor: '#59578e',
+    padding: 20,
+    borderRadius: 10,
+    marginTop: 5,
+  },
+  header: {
+    backgroundColor: 'hsl(242,24%,60%)',
+    shadowColor: '#333333',
+    shadowOffset: { width: -1, height: -3 },
+    shadowRadius: 2,
+    shadowOpacity: 0.4,
+    elevation: 1,
+    paddingTop: 20,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    borderRightColor: 20,
+  },
+  panelHeader: {
+    alignItems: 'center',
+  },
+  panelHandle: {
+    width: 40,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#00000040',
+    marginBottom: 10,
+  },
+  panel: {
+    padding: 20,
+    backgroundColor: 'hsl(242,24%,60%)',
+    paddingTop: 20,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 0 },
+    shadowRadius: 5,
+    shadowOpacity: 0.4,
+  },
+  panelTitle: {
+    fontSize: 27,
+    height: 35,
+    color: '#fff',
+  },
+  panelSubtitle: {
+    fontSize: 14,
+    color: '#fff',
+    height: 30,
+    marginBottom: 10,
+  },
+  dateInfo: {
+    flexDirection: 'row',
+  },
+  datePrevArea: {
+    flex: 1,
+    justifyContent: "flex-end",
+    alignItems: "flex-end",
+  },
+  dateNextArea: {
+    flex: 1,
+    alignItems: "flex-start",
+  },
+  dateTitleArea: {
+    width: 140,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  dateTitle: {
+    fontSize: 17,
+    fontWeight: "bold",
+    color: '#000000'
+  },
+  modalInfo: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 10
   },
 });

@@ -46,6 +46,14 @@ const openScree = ({ navigation }) => (
   </StackCreate.Navigator>
 );
 
+const MainScreen = () => {
+  return (
+    <StackCreate.Navigator>
+      
+    </StackCreate.Navigator>
+  )
+}
+
 
 export default function AppRoutes() {
   return (

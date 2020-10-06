@@ -25,7 +25,7 @@ export default function profileParking(state = INITIAL_STATE, action) {
     case Types.PROFILE_PARKING_REQUEST_SPACE_DATA:
       return { ...state, spaces: action.payload, getDataSuccess: true }
     case Types.PROFILE_PARKING_EXIT:
-      return {...state, spaces: [], request: true, getDataSuccess: false, }
+      return {...state, getDataSuccess: false, }
     default:
       return state
   };

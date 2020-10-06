@@ -21,7 +21,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Creators as ProfileActions } from '../../store/ducks/profile';
 import { InputMask, Type, RemoveMask } from '../../components/InputMask';
 import CustomProgressBar from '../../components/CustomProgressBar';
-import { useNavigation, useIsFocused } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 
 const EditProfile = () => {
 
@@ -32,8 +32,6 @@ const EditProfile = () => {
   const [name, setName] = useState(profile.dataUser.name);
   const [email, setEmail] = useState(profile.dataUser.email);
   const [phone, setPhone] = useState(profile.dataUser.phone);
-
-  const isFocused = useIsFocused();
 
   const { height } = Dimensions.get('window');
 

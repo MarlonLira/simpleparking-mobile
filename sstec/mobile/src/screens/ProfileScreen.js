@@ -29,7 +29,6 @@ const ProfileStackScrenn = ({ navigation }) => {
           backgroundColor: '#59578e',
           elevation: 0
         },
-        headerTintColor: '#000',
       }}>
       <ProfileStack.Screen
         name="Perfil"
