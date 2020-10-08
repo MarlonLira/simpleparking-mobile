@@ -158,25 +158,27 @@ export default function Main() {
   function RenderMarker() {
     return (
       parkings == [] ? null : parkings.map((parking, index) => {
-        const scaleStyle = {
-          transform: [
-            {
-              scale: interpolations[index].scale
-            }
-          ]
+        if (typeof parking.address !== "undefined") {
+          const scaleStyle = {
+            transform: [
+              {
+                scale: interpolations[index].scale
+              }
+            ]
+          }
+          let locale = { latitude: parseFloat(parking.address.latitude), longitude: parseFloat(parking.address.longitude) }
+          return (
+            <MapView.Marker key={index} coordinate={locale} onPress={(e) => onMarkerPress(e)}>
+              <Animated.View style={[styles.markerWrap]}>
+                <Animated.Image
+                  source={require('../../Images/marker.png')}
+                  style={[styles.marker, scaleStyle]}
+                >
+                </Animated.Image>
+              </Animated.View>
+            </MapView.Marker>
+          )
         }
-        let locale = { latitude: parseFloat(parking.address.latitude), longitude: parseFloat(parking.address.longitude) }
-        return (
-          <MapView.Marker key={index} coordinate={locale} onPress={(e) => onMarkerPress(e)}>
-            <Animated.View style={[styles.markerWrap]}>
-              <Animated.Image
-                source={require('../../Images/marker.png')}
-                style={[styles.marker, scaleStyle]}
-              >
-              </Animated.Image>
-            </Animated.View>
-          </MapView.Marker>
-        )
       })
     );
   };
@@ -259,9 +261,9 @@ export default function Main() {
                 resizeMode="cover"
               />
               <View style={styles.textContent}>
-                <Text numberOfLines={1} style={styles.cardtitle} >{parking.name}</Text>
-                <Text numberOfLines={1} style={styles.cardDescription} >{parking.name}</Text>
-                <Text numberOfLines={1} style={styles.cardDescription} >{parking.address.street + ', ' + parking.address.number + ', ' + parking.address.district}</Text>
+                <Text numberOfLines={1} style={styles.cardtitle} >{parking?.name}</Text>
+                <Text numberOfLines={1} style={styles.cardDescription} >{parking?.name}</Text>
+                <Text numberOfLines={1} style={styles.cardDescription} >{parking.address?.street + ', ' + parking.address?.number + ', ' + parking.address?.district}</Text>
                 <View style={styles.button}>
                   <TouchableOpacity
                     onPress={() => navigation.navigate('ProfileParking', { parking })}

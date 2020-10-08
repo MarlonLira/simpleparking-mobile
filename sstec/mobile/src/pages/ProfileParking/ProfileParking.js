@@ -17,7 +17,7 @@ import HeaderImageScrollView, { TriggeringView } from 'react-native-image-header
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Animated from 'react-native-reanimated';
-import BottomSheet from 'reanimated-bottom-sheet';
+import BottomSheet from '../../components/BottomSheet';
 
 import { Creators as ProfileParkingAction, Types as ProfileParkingTypes } from '../../store/ducks/profileParking';
 import { useDispatch, useSelector } from 'react-redux';
@@ -34,17 +34,46 @@ export default function ProfileParking({ route }) {
   const { profileParking } = useSelector(state => state);
   const isFocused = useIsFocused();
   const navigation = useNavigation();
-  const bs = React.createRef();
   const fall = new Animated.Value(1);
 
   const [selectedYear, setSelectedYear] = useState(0);
   const [selectedMonth, setSelectedMonth] = useState(0);
   const [selectedDay, setSelectedDay] = useState(0);
   const [selectedHour, setSelectedHour] = useState(null);
+  const [listDays, setListDays] = useState([]);
+  const [listHours, setListHours] = useState([]);
+  const [show, setShow] = useState(false);
+  const [disabled, setDisabled] = useState(false)
 
   useEffect(() => {
+    let daysInMount = new Date(selectedYear, selectedMonth + 1, 0).getDate();
+    let newListDay = [];
 
-  }, []);
+    for (let i = 1; i <= daysInMount; i++) {
+
+      let d = new Date(selectedYear, selectedMonth, i);
+      let year = d.getFullYear();
+      let month = d.getMonth() + 1;
+      let day = d.getDate();
+
+      month = month < 10 ? '0' + month : month;
+      day = day < 10 ? '0' + month : month;
+      let selDate = year + '-' + month + '-' + day;
+
+
+      newListDay.push({
+        status: false,
+        weekday: days[d.getDay()],
+        number: i
+      });
+    }
+
+    setListDays(newListDay);
+    setSelectedDay(1);
+    setListHours([]);
+    setSelectedHour(0);
+
+  }, [selectedMonth, selectedYear]);
 
   useEffect(() => {
     let today = new Date();
@@ -78,6 +107,19 @@ export default function ProfileParking({ route }) {
     'Sab',
   ];
 
+  const hours = [
+    '08:00',
+    '09:00',
+    '10:00',
+    '11:00',
+    '12:00',
+    '13:00',
+    '14:00',
+    '15:00',
+    '16:00',
+    '17:00',
+    '18:00',
+  ];
 
   useEffect(() => {
     if (!isFocused) {
@@ -104,6 +146,7 @@ export default function ProfileParking({ route }) {
     setSelectedYear(mountDate.getFullYear());
     setSelectedMonth(mountDate.getMonth());
     setSelectedDay(1);
+    handleSelectedDay(selectedDay);
   };
 
   const handleRightDateClick = () => {
@@ -112,53 +155,124 @@ export default function ProfileParking({ route }) {
     setSelectedYear(mountDate.getFullYear());
     setSelectedMonth(mountDate.getMonth());
     setSelectedDay(1);
+    handleSelectedDay(selectedDay);
   };
 
-  const handleButton = () => {
-    bs.current.snapTo(0);
+  const handleSelectedDay = (number) => {
+    let nowDate = new Date();
+    let date = new Date(selectedYear, selectedMonth, number);
+
+    console.log('DATE', date);
+
+    if (date >= nowDate) {
+      setSelectedDay(number);
+      setDisabled(false);
+    } else {
+      setDisabled(true);
+    }
+
   };
 
-  const renderHeader = () => (
-    <View style={styles.header}>
-      <View style={styles.panelHeader}>
-        <View style={styles.panelHandle}>
+  const validateDateChanging = (number) => {
+    let nowDate = new Date();
+    let date = new Date(selectedYear, selectedMonth, number);
 
+    if (date < nowDate) {
+      setDisabled(true);
+      return 0.5
+    } else {
+      setDisabled(false);
+      return 1
+    }
+  };
+
+  const handleBottom = () => {
+    setShow(true)
+  }
+
+  const handleCloseBottom = () => {
+    setShow(false)
+  }
+
+  const RenderInner = () => {
+
+    return (
+      <View style={styles.panel}>
+        <View style={{ alignItems: 'center' }}>
+          <Text style={styles.panelTitle}> Agendamento </Text>
+          <Text style={styles.panelSubtitle}> Selecione os dados conforme desejar </Text>
         </View>
-      </View>
-    </View>
-  );
 
-  const renderInner = () => (
-    <View style={styles.panel}>
-      <View style={{ alignItems: 'center' }}>
-        <Text style={styles.panelTitle}> Agendamento </Text>
-        <Text style={styles.panelSubtitle}> Selecione os dados conforme desejar </Text>
-      </View>
+        <View style={styles.modalInfo}>
+          <View style={styles.dateInfo}>
 
-      <View style={styles.modalInfo}>
-        <View style={styles.dateInfo}>
+            <TouchableOpacity style={styles.datePrevArea} onPress={handleLeftDateClick}>
+              <MaterialIcons name="navigate-before" size={25} />
+            </TouchableOpacity>
+            <View style={styles.dateTitleArea}>
+              <Text style={styles.dateTitle}>{months[selectedMonth]} {selectedYear}</Text>
+            </View>
+            <TouchableOpacity style={styles.dateNextArea} onPress={handleRightDateClick}>
+              <MaterialIcons name="navigate-next" size={25} />
+            </TouchableOpacity>
 
-          <TouchableOpacity style={styles.datePrevArea} onPress={handleLeftDateClick}>
-            <MaterialIcons name="navigate-before" size={25} />
-          </TouchableOpacity>
-          <View style={styles.dateTitleArea}>
-            <Text style={styles.dateTitle}>{months[selectedMonth]} {selectedYear}</Text>
           </View>
-          <TouchableOpacity style={styles.dateNextArea} onPress={handleRightDateClick}>
-            <MaterialIcons name="navigate-next" size={25} />
-          </TouchableOpacity>
 
+          <View>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.scroll}>
+              {listDays.map((item, index) => (
+
+                <TouchableOpacity
+                  key={index}
+                  style={[
+                    styles.dateItem,
+                    {
+                      opacity: validateDateChanging(item.number),
+                      backgroundColor: item.number === selectedDay && !disabled ? "#59578e" : "#fff",
+                    }
+                  ]}
+                  onPress={() => handleSelectedDay(item.number)}
+
+                >
+                  <Text style={[
+                    styles.dateItemWeekDay,
+                    {
+                      color: item.number === selectedDay && !disabled ? "#fff" : "#000",
+                    }
+                  ]}>{item.weekday}</Text>
+                  <Text style={[
+                    styles.dateItemNumber,
+                    {
+                      color: item.number === selectedDay && !disabled ? "#fff" : "#000",
+                    }
+                  ]}>{item.number}</Text>
+                </TouchableOpacity>
+              )
+              )}
+            </ScrollView>
+          </View>
         </View>
 
-        <ScrollView style={styles.dateList} horizontal={true} showsHorizontalScrollIndicator={false}>
+        <View style={styles.modalInfo}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.scroll}>
+            {hours.map((item, index) => (
 
-        </ScrollView>
+              <TouchableOpacity
+                key={index}
+                style={[styles.dateItem , {margin: 10}]}
+                onPress={() => {}}
+              >
+                <Text style={styles.dateItemNumber}>{item}</Text>
+              </TouchableOpacity>
+            )
+            )}
+          </ScrollView>
+        </View>
 
+        {/* <ButtonComponent text="Finalizar agendamento" /> */}
       </View>
-
-      {/* <ButtonComponent text="Finalizar agendamento" /> */}
-    </View>
-  );
+    );
+  };
 
   const RenderSpaces = () => {
 
@@ -216,7 +330,7 @@ export default function ProfileParking({ route }) {
           <View style={styles.sectionButton}>
             <ButtonComponent
               text="Reservar"
-              onPress={handleButton}
+              onPress={handleBottom}
             />
           </View>
 
@@ -275,13 +389,9 @@ export default function ProfileParking({ route }) {
       }
 
       <BottomSheet
-        ref={bs}
-        snapPoints={[600, 0]}
-        renderContent={renderInner}
-        renderHeader={renderHeader}
-        initialSnap={1}
-        callbackNode={fall}
-        enabledGestureInteraction={true}
+        show={show}
+        handleCloseButton={handleCloseBottom}
+        body={<RenderInner />}
       />
 
     </SafeAreaView >
@@ -430,30 +540,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginTop: 5,
   },
-  header: {
-    backgroundColor: 'hsl(242,24%,60%)',
-    shadowColor: '#333333',
-    shadowOffset: { width: -1, height: -3 },
-    shadowRadius: 2,
-    shadowOpacity: 0.4,
-    elevation: 1,
-    paddingTop: 20,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    borderRightColor: 20,
-  },
-  panelHeader: {
-    alignItems: 'center',
-  },
-  panelHandle: {
-    width: 40,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#00000040',
-    marginBottom: 10,
-  },
   panel: {
-    padding: 20,
     backgroundColor: 'hsl(242,24%,60%)',
     paddingTop: 20,
     shadowColor: '#000000',
@@ -497,6 +584,27 @@ const styles = StyleSheet.create({
   modalInfo: {
     backgroundColor: '#fff',
     borderRadius: 10,
-    padding: 10
+    padding: 10,
+    marginBottom: 10
   },
+  dateItem: {
+    width: 45,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 10,
+    paddingTop: 5,
+    paddingBottom: 5,
+  },
+  dateItemWeekDay: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  dateItemNumber: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  scroll: {
+    padding: 5,
+    marginRight: 10
+  }
 });
