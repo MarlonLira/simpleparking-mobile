@@ -5,6 +5,7 @@ export const Container = styled.View`
   flex-direction: row;
   align-items: center;
   justify-content: center;
+  margin-top: 20px;
 `;
 
 export const SubmitButton = styled.TouchableOpacity`
@@ -12,8 +13,7 @@ export const SubmitButton = styled.TouchableOpacity`
   border-radius: 10px;
   background-color: #59578e;
   align-items: center;
-  margin-top: 10px;
-  width: 90%;
+  width: 100%;
 `;
 
 export const TextButton = styled.Text`

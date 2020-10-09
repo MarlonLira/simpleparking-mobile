@@ -22,3 +22,6 @@ export const CloseButton = styled.TouchableOpacity`
   width: 40px;
   height: 40px;
 `;
+
+export const ScrollBody = styled.ScrollView`
+`; 

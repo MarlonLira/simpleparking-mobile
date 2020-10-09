@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import {
   View,
   Text,
@@ -11,6 +11,7 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   ScrollView,
+  FlatList
 } from 'react-native'
 import ButtonComponent from '../../components/Button/';
 import HeaderImageScrollView, { TriggeringView } from 'react-native-image-header-scroll-view';
@@ -18,10 +19,15 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Animated from 'react-native-reanimated';
 import BottomSheet from '../../components/BottomSheet';
+import { Picker } from '@react-native-community/picker';
+import { DecryptValue } from '../../utils/crypto';
 
-import { Creators as ProfileParkingAction, Types as ProfileParkingTypes } from '../../store/ducks/profileParking';
+import { Creators as ProfileParkingAction } from '../../store/ducks/profileParking';
+import { Creators as CarAction } from '../../store/ducks/car';
+import { Creators as CrediCardAction } from '../../store/ducks/creditCard';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
+import { AuthContext } from '../../contexts/auth';
 
 import * as Animatable from 'react-native-animatable';
 const MIN_HEIGHT = Platform.OS === 'ios' ? 90 : 90;
@@ -29,12 +35,13 @@ const MAX_HEIGHT = 350;
 
 export default function ProfileParking({ route }) {
 
+  const { user } = useContext(AuthContext);
+
   const navTitleView = useRef(null);
   const dispatch = useDispatch();
-  const { profileParking } = useSelector(state => state);
+  const { profileParking, car, creditCard,  } = useSelector(state => state);
   const isFocused = useIsFocused();
   const navigation = useNavigation();
-  const fall = new Animated.Value(1);
 
   const [selectedYear, setSelectedYear] = useState(0);
   const [selectedMonth, setSelectedMonth] = useState(0);
@@ -43,9 +50,15 @@ export default function ProfileParking({ route }) {
   const [listDays, setListDays] = useState([]);
   const [listHours, setListHours] = useState([]);
   const [show, setShow] = useState(false);
-  const [disabled, setDisabled] = useState(false)
+  const [disabled, setDisabled] = useState(false);
+  const [vehicle, setVehicle] = useState([]);
+  const [cCard, setCCard] = useState([]);
+  const [spacesSchedule, setSpcacesSchedule] = useState([]);
+  const [vehicleSchedule, setVehicleSchedule] = useState(null);
+  const [cCardSchedule, setCCardSchedule] = useState(null);
 
   useEffect(() => {
+    let nowDate = new Date();
     let daysInMount = new Date(selectedYear, selectedMonth + 1, 0).getDate();
     let newListDay = [];
 
@@ -69,7 +82,7 @@ export default function ProfileParking({ route }) {
     }
 
     setListDays(newListDay);
-    setSelectedDay(1);
+    setSelectedDay(nowDate.getDay());
     setListHours([]);
     setSelectedHour(0);
 
@@ -80,6 +93,11 @@ export default function ProfileParking({ route }) {
     setSelectedYear(today.getFullYear());
     setSelectedMonth(today.getMonth());
     setSelectedDay(today.getDate());
+  }, []);
+
+  useEffect(() => {
+    dispatch(CarAction.carRequest(user.id));
+    dispatch(CrediCardAction.creditCardRequest(user.id));
   }, []);
 
   const months = [
@@ -145,7 +163,7 @@ export default function ProfileParking({ route }) {
     mountDate.setMonth(mountDate.getMonth() - 1);
     setSelectedYear(mountDate.getFullYear());
     setSelectedMonth(mountDate.getMonth());
-    setSelectedDay(1);
+    setSelectedDay(0);
     handleSelectedDay(selectedDay);
   };
 
@@ -154,15 +172,13 @@ export default function ProfileParking({ route }) {
     mountDate.setMonth(mountDate.getMonth() + 1);
     setSelectedYear(mountDate.getFullYear());
     setSelectedMonth(mountDate.getMonth());
-    setSelectedDay(1);
+    setSelectedDay(0);
     handleSelectedDay(selectedDay);
   };
 
   const handleSelectedDay = (number) => {
     let nowDate = new Date();
     let date = new Date(selectedYear, selectedMonth, number);
-
-    console.log('DATE', date);
 
     if (date >= nowDate) {
       setSelectedDay(number);
@@ -172,6 +188,68 @@ export default function ProfileParking({ route }) {
     }
 
   };
+
+  const RenderPikerVehicle = () => {
+
+    setVehicle(car.cars);
+
+    var allTypes = vehicle.map((item, index) => {
+      return <Picker.Item key={index} value={item.id} label={`${item.model} | ${item.licensePlate}`} />
+    });
+
+    return (
+      <Picker
+        selectedValue={vehicleSchedule}
+        onValueChange={(itemValue, itemIndex) => setVehicleSchedule(itemValue)}
+        mode='dropdown'
+        style={{ marginLeft: 10, color: '#000' }}
+      >
+        <Picker.Item key={''} value={''} label={''} />
+        {allTypes}
+      </Picker>
+    )
+  };
+
+  const RenderPikerCard = () => {
+    setCCard(creditCard.creditCards);
+
+    var allTypes = cCard.map((item, index) => {
+      var nummber = DecryptValue(item.number).substring(12, 16)
+      return <Picker.Item key={index} value={item.id} label={`${item.flag.toUpperCase()} | ****${nummber}`} />
+    });
+
+    return (
+      <Picker
+        selectedValue={cCardSchedule}
+        onValueChange={(itemValue, itemIndex) => setCCardSchedule(itemValue)}
+        mode='dropdown'
+        style={{ marginLeft: 10, color: '#000' }}
+      >
+        <Picker.Item key={''} value={''} label={''} />
+        {allTypes}
+      </Picker>
+    )
+  };
+
+  const RenderPikerTypes = () => {
+    console.log(profileParking.spaces);
+
+    var allTypes = profileParking.spaces.map((item, index) => {
+      return <Picker.Item key={index} value={item.type} label={`${getTypeSpace(item.type)} | R$${item.value.toFixed(2)}`} />
+    });
+
+    return (
+      <Picker
+        selectedValue={spacesSchedule}
+        onValueChange={(itemValue, itemIndex) => setSpcacesSchedule(itemValue)}
+        mode='dropdown'
+        style={{ marginLeft: 10, color: '#000' }}
+      >
+        <Picker.Item key={''} value={''} label={''} />
+        {allTypes}
+      </Picker>
+    )
+  }
 
   const validateDateChanging = (number) => {
     let nowDate = new Date();
@@ -203,7 +281,7 @@ export default function ProfileParking({ route }) {
           <Text style={styles.panelSubtitle}> Selecione os dados conforme desejar </Text>
         </View>
 
-        <View style={styles.modalInfo}>
+        <View style={[styles.modalInfo, { width: '100%' }]}>
           <View style={styles.dateInfo}>
 
             <TouchableOpacity style={styles.datePrevArea} onPress={handleLeftDateClick}>
@@ -253,14 +331,33 @@ export default function ProfileParking({ route }) {
           </View>
         </View>
 
-        <View style={styles.modalInfo}>
+        <View style={[styles.modalInfo, { width: '100%' }]}>
+          <View style={styles.modalVehicle}>
+            <Text> Horário para chegada </Text>
+          </View>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.scroll}>
             {hours.map((item, index) => (
 
               <TouchableOpacity
                 key={index}
-                style={[styles.dateItem , {margin: 10}]}
-                onPress={() => {}}
+                style={[styles.dateItem, { margin: 10 }]}
+                onPress={() => { }}
+              >
+                <Text style={styles.dateItemNumber}>{item}</Text>
+              </TouchableOpacity>
+            )
+            )}
+          </ScrollView>
+          <View style={styles.modalVehicle}>
+            <Text> Horário para saída </Text>
+          </View>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.scroll}>
+            {hours.map((item, index) => (
+
+              <TouchableOpacity
+                key={index}
+                style={[styles.dateItem, { margin: 10 }]}
+                onPress={() => { }}
               >
                 <Text style={styles.dateItemNumber}>{item}</Text>
               </TouchableOpacity>
@@ -269,7 +366,36 @@ export default function ProfileParking({ route }) {
           </ScrollView>
         </View>
 
-        {/* <ButtonComponent text="Finalizar agendamento" /> */}
+        <View style={styles.modalVehicle}>
+          <View style={[styles.modalInfo, { width: '100%' }]}>
+            <View style={styles.modalVehicle}>
+              <Text > Selecione o veículo que irá estacionar </Text>
+            </View>
+            <RenderPikerVehicle />
+          </View>
+        </View>
+
+        <View style={styles.modalVehicle}>
+          <View style={[styles.modalInfo, { width: '100%' }]}>
+            <View style={styles.modalVehicle}>
+              <Text > Selecione o cartão para pagamento </Text>
+            </View>
+            <RenderPikerCard />
+          </View>
+        </View>
+
+        <View style={styles.modalVehicle}>
+          <View style={[styles.modalInfo, { width: '100%' }]}>
+            <View style={styles.modalVehicle}>
+              <Text > Selecione o tipo da vaga </Text>
+            </View>
+            <RenderPikerTypes />
+          </View>
+        </View>
+
+        <View style={{marginTop: 10, marginBottom: 30}}>
+          <ButtonComponent text="Finalizar agendamento" />
+        </View>
       </View>
     );
   };
@@ -547,6 +673,8 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 0 },
     shadowRadius: 5,
     shadowOpacity: 0.4,
+    justifyContent: 'center',
+    flexDirection: 'column',
   },
   panelTitle: {
     fontSize: 27,
@@ -585,7 +713,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 10,
     padding: 10,
-    marginBottom: 10
+    marginBottom: 10,
   },
   dateItem: {
     width: 45,
@@ -606,5 +734,8 @@ const styles = StyleSheet.create({
   scroll: {
     padding: 5,
     marginRight: 10
-  }
+  },
+  modalVehicle: {
+    alignItems: 'center',
+  },
 });
