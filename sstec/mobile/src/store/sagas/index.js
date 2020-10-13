@@ -9,7 +9,7 @@ import { Creators as CreditCardActions, Types as CreditCardTypes } from '../duck
 import { Creators as CarActions, Types as CarTypes } from '../ducks/car';
 import { Creators as MapActions, Types as MapATypes } from '../ducks/map';
 import { Creators as ProfileParkingAction, Types as ProfileParkingTypes } from '../ducks/profileParking';
-
+import { Creators as SchedulingAction, Types as SchedulingTypes } from '../ducks/scheduling';
 
 export default function* rootSaga() {
   return yield all([
@@ -30,6 +30,7 @@ export default function* rootSaga() {
 
     takeLatest(ProfileParkingTypes.PROFILE_PARKING_REQUEST_SPACE, getParkingspace),
 
+    takeLatest(SchedulingTypes.SCHEDULING_INCLUDE, includeScheduling),
   ]);
 };
 
@@ -239,3 +240,17 @@ function* getParkingspace(action) {
     AlertDialog('Erro', error.response.data.message, ['OK']);
   };
 };
+
+/**
+ * Scheduling 
+ */
+function* includeScheduling(action){
+  try {
+    console.log('aqui')
+    const { values } = action.payload;
+    const request = yield call(getApi.post, '/scheduling/', values);
+
+  } catch (error) {
+    AlertDialog('Erro', error.response.data.message, ['OK']);
+  }
+}

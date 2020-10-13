@@ -5,11 +5,7 @@ import {
   Avatar,
   Title,
   Caption,
-  Paragraph,
   Drawer,
-  Text,
-  TouchableRipple,
-  Switch
 } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { AuthContext } from '../../src/contexts/auth';

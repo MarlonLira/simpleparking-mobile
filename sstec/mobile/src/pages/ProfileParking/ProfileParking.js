@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useContext } from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -10,134 +10,24 @@ import {
   StatusBar,
   ActivityIndicator,
   TouchableOpacity,
-  ScrollView,
-  FlatList
-} from 'react-native'
-import ButtonComponent from '../../components/Button/';
+} from 'react-native';
 import HeaderImageScrollView, { TriggeringView } from 'react-native-image-header-scroll-view';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import Animated from 'react-native-reanimated';
-import BottomSheet from '../../components/BottomSheet';
-import { Picker } from '@react-native-community/picker';
-import { DecryptValue } from '../../utils/crypto';
 
 import { Creators as ProfileParkingAction } from '../../store/ducks/profileParking';
-import { Creators as CarAction } from '../../store/ducks/car';
-import { Creators as CrediCardAction } from '../../store/ducks/creditCard';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
-import { AuthContext } from '../../contexts/auth';
-
 import * as Animatable from 'react-native-animatable';
 const MIN_HEIGHT = Platform.OS === 'ios' ? 90 : 90;
 const MAX_HEIGHT = 350;
 
 export default function ProfileParking({ route }) {
 
-  const { user } = useContext(AuthContext);
-
   const navTitleView = useRef(null);
   const dispatch = useDispatch();
-  const { profileParking, car, creditCard,  } = useSelector(state => state);
+  const { profileParking } = useSelector(state => state);
   const isFocused = useIsFocused();
   const navigation = useNavigation();
-
-  const [selectedYear, setSelectedYear] = useState(0);
-  const [selectedMonth, setSelectedMonth] = useState(0);
-  const [selectedDay, setSelectedDay] = useState(0);
-  const [selectedHour, setSelectedHour] = useState(null);
-  const [listDays, setListDays] = useState([]);
-  const [listHours, setListHours] = useState([]);
-  const [show, setShow] = useState(false);
-  const [disabled, setDisabled] = useState(false);
-  const [vehicle, setVehicle] = useState([]);
-  const [cCard, setCCard] = useState([]);
-  const [spacesSchedule, setSpcacesSchedule] = useState([]);
-  const [vehicleSchedule, setVehicleSchedule] = useState(null);
-  const [cCardSchedule, setCCardSchedule] = useState(null);
-
-  useEffect(() => {
-    let nowDate = new Date();
-    let daysInMount = new Date(selectedYear, selectedMonth + 1, 0).getDate();
-    let newListDay = [];
-
-    for (let i = 1; i <= daysInMount; i++) {
-
-      let d = new Date(selectedYear, selectedMonth, i);
-      let year = d.getFullYear();
-      let month = d.getMonth() + 1;
-      let day = d.getDate();
-
-      month = month < 10 ? '0' + month : month;
-      day = day < 10 ? '0' + month : month;
-      let selDate = year + '-' + month + '-' + day;
-
-
-      newListDay.push({
-        status: false,
-        weekday: days[d.getDay()],
-        number: i
-      });
-    }
-
-    setListDays(newListDay);
-    setSelectedDay(nowDate.getDay());
-    setListHours([]);
-    setSelectedHour(0);
-
-  }, [selectedMonth, selectedYear]);
-
-  useEffect(() => {
-    let today = new Date();
-    setSelectedYear(today.getFullYear());
-    setSelectedMonth(today.getMonth());
-    setSelectedDay(today.getDate());
-  }, []);
-
-  useEffect(() => {
-    dispatch(CarAction.carRequest(user.id));
-    dispatch(CrediCardAction.creditCardRequest(user.id));
-  }, []);
-
-  const months = [
-    'Janeiro',
-    'Fevereiro',
-    'Março',
-    'Abril',
-    'Maio',
-    'Junho',
-    'Julho',
-    'Agosto',
-    'Setembro',
-    'Outubro',
-    'Novembro',
-    'Dezembro',
-  ];
-
-  const days = [
-    'Dom',
-    'Seg',
-    'Ter',
-    'Quar',
-    'Qui',
-    'Sex',
-    'Sab',
-  ];
-
-  const hours = [
-    '08:00',
-    '09:00',
-    '10:00',
-    '11:00',
-    '12:00',
-    '13:00',
-    '14:00',
-    '15:00',
-    '16:00',
-    '17:00',
-    '18:00',
-  ];
 
   useEffect(() => {
     if (!isFocused) {
@@ -158,258 +48,30 @@ export default function ProfileParking({ route }) {
     };
   };
 
-  const handleLeftDateClick = () => {
-    let mountDate = new Date(selectedYear, selectedMonth, 1);
-    mountDate.setMonth(mountDate.getMonth() - 1);
-    setSelectedYear(mountDate.getFullYear());
-    setSelectedMonth(mountDate.getMonth());
-    setSelectedDay(0);
-    handleSelectedDay(selectedDay);
-  };
-
-  const handleRightDateClick = () => {
-    let mountDate = new Date(selectedYear, selectedMonth, 1);
-    mountDate.setMonth(mountDate.getMonth() + 1);
-    setSelectedYear(mountDate.getFullYear());
-    setSelectedMonth(mountDate.getMonth());
-    setSelectedDay(0);
-    handleSelectedDay(selectedDay);
-  };
-
-  const handleSelectedDay = (number) => {
-    let nowDate = new Date();
-    let date = new Date(selectedYear, selectedMonth, number);
-
-    if (date >= nowDate) {
-      setSelectedDay(number);
-      setDisabled(false);
-    } else {
-      setDisabled(true);
-    }
-
-  };
-
-  const RenderPikerVehicle = () => {
-
-    setVehicle(car.cars);
-
-    var allTypes = vehicle.map((item, index) => {
-      return <Picker.Item key={index} value={item.id} label={`${item.model} | ${item.licensePlate}`} />
-    });
-
-    return (
-      <Picker
-        selectedValue={vehicleSchedule}
-        onValueChange={(itemValue, itemIndex) => setVehicleSchedule(itemValue)}
-        mode='dropdown'
-        style={{ marginLeft: 10, color: '#000' }}
-      >
-        <Picker.Item key={''} value={''} label={''} />
-        {allTypes}
-      </Picker>
-    )
-  };
-
-  const RenderPikerCard = () => {
-    setCCard(creditCard.creditCards);
-
-    var allTypes = cCard.map((item, index) => {
-      var nummber = DecryptValue(item.number).substring(12, 16)
-      return <Picker.Item key={index} value={item.id} label={`${item.flag.toUpperCase()} | ****${nummber}`} />
-    });
-
-    return (
-      <Picker
-        selectedValue={cCardSchedule}
-        onValueChange={(itemValue, itemIndex) => setCCardSchedule(itemValue)}
-        mode='dropdown'
-        style={{ marginLeft: 10, color: '#000' }}
-      >
-        <Picker.Item key={''} value={''} label={''} />
-        {allTypes}
-      </Picker>
-    )
-  };
-
-  const RenderPikerTypes = () => {
-    console.log(profileParking.spaces);
-
-    var allTypes = profileParking.spaces.map((item, index) => {
-      return <Picker.Item key={index} value={item.type} label={`${getTypeSpace(item.type)} | R$${item.value.toFixed(2)}`} />
-    });
-
-    return (
-      <Picker
-        selectedValue={spacesSchedule}
-        onValueChange={(itemValue, itemIndex) => setSpcacesSchedule(itemValue)}
-        mode='dropdown'
-        style={{ marginLeft: 10, color: '#000' }}
-      >
-        <Picker.Item key={''} value={''} label={''} />
-        {allTypes}
-      </Picker>
-    )
+  const handleBbtReservation = (data) => {
+    navigation.navigate('Scheduling', { parking: route.params.parking, space: data });
   }
-
-  const validateDateChanging = (number) => {
-    let nowDate = new Date();
-    let date = new Date(selectedYear, selectedMonth, number);
-
-    if (date < nowDate) {
-      setDisabled(true);
-      return 0.5
-    } else {
-      setDisabled(false);
-      return 1
-    }
-  };
-
-  const handleBottom = () => {
-    setShow(true)
-  }
-
-  const handleCloseBottom = () => {
-    setShow(false)
-  }
-
-  const RenderInner = () => {
-
-    return (
-      <View style={styles.panel}>
-        <View style={{ alignItems: 'center' }}>
-          <Text style={styles.panelTitle}> Agendamento </Text>
-          <Text style={styles.panelSubtitle}> Selecione os dados conforme desejar </Text>
-        </View>
-
-        <View style={[styles.modalInfo, { width: '100%' }]}>
-          <View style={styles.dateInfo}>
-
-            <TouchableOpacity style={styles.datePrevArea} onPress={handleLeftDateClick}>
-              <MaterialIcons name="navigate-before" size={25} />
-            </TouchableOpacity>
-            <View style={styles.dateTitleArea}>
-              <Text style={styles.dateTitle}>{months[selectedMonth]} {selectedYear}</Text>
-            </View>
-            <TouchableOpacity style={styles.dateNextArea} onPress={handleRightDateClick}>
-              <MaterialIcons name="navigate-next" size={25} />
-            </TouchableOpacity>
-
-          </View>
-
-          <View>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.scroll}>
-              {listDays.map((item, index) => (
-
-                <TouchableOpacity
-                  key={index}
-                  style={[
-                    styles.dateItem,
-                    {
-                      opacity: validateDateChanging(item.number),
-                      backgroundColor: item.number === selectedDay && !disabled ? "#59578e" : "#fff",
-                    }
-                  ]}
-                  onPress={() => handleSelectedDay(item.number)}
-
-                >
-                  <Text style={[
-                    styles.dateItemWeekDay,
-                    {
-                      color: item.number === selectedDay && !disabled ? "#fff" : "#000",
-                    }
-                  ]}>{item.weekday}</Text>
-                  <Text style={[
-                    styles.dateItemNumber,
-                    {
-                      color: item.number === selectedDay && !disabled ? "#fff" : "#000",
-                    }
-                  ]}>{item.number}</Text>
-                </TouchableOpacity>
-              )
-              )}
-            </ScrollView>
-          </View>
-        </View>
-
-        <View style={[styles.modalInfo, { width: '100%' }]}>
-          <View style={styles.modalVehicle}>
-            <Text> Horário para chegada </Text>
-          </View>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.scroll}>
-            {hours.map((item, index) => (
-
-              <TouchableOpacity
-                key={index}
-                style={[styles.dateItem, { margin: 10 }]}
-                onPress={() => { }}
-              >
-                <Text style={styles.dateItemNumber}>{item}</Text>
-              </TouchableOpacity>
-            )
-            )}
-          </ScrollView>
-          <View style={styles.modalVehicle}>
-            <Text> Horário para saída </Text>
-          </View>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.scroll}>
-            {hours.map((item, index) => (
-
-              <TouchableOpacity
-                key={index}
-                style={[styles.dateItem, { margin: 10 }]}
-                onPress={() => { }}
-              >
-                <Text style={styles.dateItemNumber}>{item}</Text>
-              </TouchableOpacity>
-            )
-            )}
-          </ScrollView>
-        </View>
-
-        <View style={styles.modalVehicle}>
-          <View style={[styles.modalInfo, { width: '100%' }]}>
-            <View style={styles.modalVehicle}>
-              <Text > Selecione o veículo que irá estacionar </Text>
-            </View>
-            <RenderPikerVehicle />
-          </View>
-        </View>
-
-        <View style={styles.modalVehicle}>
-          <View style={[styles.modalInfo, { width: '100%' }]}>
-            <View style={styles.modalVehicle}>
-              <Text > Selecione o cartão para pagamento </Text>
-            </View>
-            <RenderPikerCard />
-          </View>
-        </View>
-
-        <View style={styles.modalVehicle}>
-          <View style={[styles.modalInfo, { width: '100%' }]}>
-            <View style={styles.modalVehicle}>
-              <Text > Selecione o tipo da vaga </Text>
-            </View>
-            <RenderPikerTypes />
-          </View>
-        </View>
-
-        <View style={{marginTop: 10, marginBottom: 30}}>
-          <ButtonComponent text="Finalizar agendamento" />
-        </View>
-      </View>
-    );
-  };
 
   const RenderSpaces = () => {
-
     return (
-      profileParking.spaces == [] ? null : profileParking.spaces.map((space, index) => (
-        <View key={index} style={[styles.cardSpace, styles.cardHandler]}>
-          <Text style={[styles.sectionContent, styles.borderText]}>{getTypeSpace(space.type)}</Text>
-          <Text style={[styles.sectionContent, styles.borderText]}>R$ {space.value.toFixed(2)}</Text>
-          <Text style={[styles.sectionContent, styles.borderText]}>Vagas: {space.amount}</Text>
-        </View>
-      ))
+      <View style={styles.serviceArea}>
+
+        <Text style={styles.serviceTitle}> Vagas diponíveis </Text>
+
+        {profileParking.spaces == [] ? null : profileParking.spaces.map((space, index) => (
+          <View key={index} style={styles.serviceItem}>
+            <View style={styles.serviceInfo}>
+              <Text style={styles.serviceName}>{getTypeSpace(space.type)}</Text>
+              <Text style={styles.servicePrice}>R$ {space.value.toFixed(2)}</Text>
+              <Text style={styles.servicePrice}>Vagas: {space.amount}</Text>
+            </View>
+            <TouchableOpacity style={styles.serviceButton} activeOpacity={0.6} onPress={() => handleBbtReservation(space)}>
+              <Text style={styles.serviceTextButton}>Agendar</Text>
+            </TouchableOpacity>
+          </View>
+        ))}
+
+      </View>
     );
   };
 
@@ -453,28 +115,15 @@ export default function ProfileParking({ route }) {
             </View>
           </TriggeringView>
 
-          <View style={styles.sectionButton}>
+          {/* <View style={styles.sectionButton}>
             <ButtonComponent
               text="Reservar"
-              onPress={handleBottom}
+              onPress={() => )}
             />
-          </View>
+          </View> */}
 
           <View style={[styles.section, styles.sectionLarge]}>
-
-            <View style={[styles.cardSpace, { backgroundColor: 'hsl(242,24%,80%)' }]}>
-              <View style={{ alignItems: "center" }}>
-                <Text style={styles.titleSpaces}> Vagas disponíveis </Text>
-              </View>
-              <View style={[styles.cardSpace, styles.subCard]}>
-                <Text style={[styles.sectionContent, styles.borderText]}>Tipo:</Text>
-                <Text style={[styles.sectionContent, styles.borderText]}>Valor:</Text>
-                <Text style={[styles.sectionContent, styles.borderText]}>Quantidade:</Text>
-              </View>
-
-              <RenderSpaces />
-
-            </View>
+            <RenderSpaces />
           </View>
 
           <View style={styles.section}>
@@ -513,12 +162,6 @@ export default function ProfileParking({ route }) {
         </HeaderImageScrollView>
 
       }
-
-      <BottomSheet
-        show={show}
-        handleCloseButton={handleCloseBottom}
-        body={<RenderInner />}
-      />
 
     </SafeAreaView >
   )
@@ -571,7 +214,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   section: {
-    padding: 20,
+    padding: 15,
     borderBottomWidth: 1,
     borderBottomColor: '#cccccc',
     backgroundColor: 'white',
@@ -738,4 +381,47 @@ const styles = StyleSheet.create({
   modalVehicle: {
     alignItems: 'center',
   },
+
+  serviceItem: {
+    flexDirection: 'row',
+    marginLeft: 10,
+    marginRight: 10,
+    marginBottom: 20,
+  },
+  serviceInfo: {
+    flex: 1
+  },
+  serviceName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#000',
+  },
+  servicePrice: {
+    fontSize: 14,
+    color: '#000',
+  },
+  serviceButton: {
+    backgroundColor: '#59578e',
+    borderRadius: 10,
+    paddingLeft: 15,
+    paddingRight: 15,
+    paddingTop: 10,
+    paddingBottom: 10,
+    alignSelf: 'center',
+  },
+  serviceTextButton: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#fff'
+  },
+  serviceTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginLeft: 5,
+    marginBottom: 20,
+  },
+  serviceArea: {
+    marginTop: 20,
+  }
+
 });

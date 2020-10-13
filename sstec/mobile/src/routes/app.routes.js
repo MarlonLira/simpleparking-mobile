@@ -60,18 +60,19 @@ export default function AppRoutes() {
     <DrawerCreate.Navigator drawerContent={props => <DrawerComponent {...props} />}>
       <StackCreate.Screen name="openScree" component={openScree} />
       <DrawerCreate.Screen name="Profile" component={ProfileStackScrenn} />
-      <StackCreate.Screen name="Scheduling" component={Scheduling} />
-
-      <StackCreate.Screen 
+      <DrawerCreate.Screen 
         name="ProfileParking" 
         component={ProfileParking}
-        options={({route}) => ({
+        options={{
           headerBackTitleVisible: false,
           headerTitle: false,
           headerTransparent: true,
           headerTintColor: '#fff'
-        })}
+        }}
       />
+      <StackCreate.Screen name="Scheduling" component={Scheduling} />
+
+     
     </DrawerCreate.Navigator>
   );
 };
