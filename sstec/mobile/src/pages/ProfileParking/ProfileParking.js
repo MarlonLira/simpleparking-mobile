@@ -30,12 +30,10 @@ export default function ProfileParking({ route }) {
   const navigation = useNavigation();
 
   useEffect(() => {
-    if (!isFocused) {
-      dispatch(ProfileParkingAction.exitScreen());
-    } else if (typeof route.params.parking.id !== "undefined") {
+    if (typeof route.params.parking.id !== "undefined") {
       dispatch(ProfileParkingAction.profileParkingRequestSpace(route.params.parking.id));
     }
-  }, [isFocused, route.params.parking.id]);
+  }, [route.params.parking.id]);
 
   const getTypeSpace = (type) => {
     switch (type) {
@@ -114,13 +112,6 @@ export default function ProfileParking({ route }) {
               </View>
             </View>
           </TriggeringView>
-
-          {/* <View style={styles.sectionButton}>
-            <ButtonComponent
-              text="Reservar"
-              onPress={() => )}
-            />
-          </View> */}
 
           <View style={[styles.section, styles.sectionLarge]}>
             <RenderSpaces />

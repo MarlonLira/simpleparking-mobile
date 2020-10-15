@@ -19,12 +19,13 @@ import Dialog from "react-native-dialog";
 import { Picker } from '@react-native-community/picker';
 import { DecryptValue } from '../../utils/crypto';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
+import CustomProgressBar from '../../components/CustomProgressBar';
 
 import { Creators as CarAction } from '../../store/ducks/car';
 import { Creators as CrediCardAction } from '../../store/ducks/creditCard';
 import { Creators as SchedulingActions } from '../../store/ducks/scheduling';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigation, useIsFocused } from '@react-navigation/native';
+import { useNavigation, useIsFocused, StackActions } from '@react-navigation/native';
 import { AuthContext } from '../../contexts/auth';
 
 import * as Animatable from 'react-native-animatable';
@@ -37,7 +38,7 @@ export default function Scheduling({ route }) {
 
   const navTitleView = useRef(null);
   const dispatch = useDispatch();
-  const { profileParking, car, creditCard, } = useSelector(state => state);
+  const { profileParking, car, creditCard, scheduling } = useSelector(state => state);
   const isFocused = useIsFocused();
   const navigation = useNavigation();
 
@@ -60,9 +61,9 @@ export default function Scheduling({ route }) {
   const [parking, setParking] = useState({});
 
   LocaleConfig.locales['fr'] = {
-    monthNames: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'],
-    monthNamesShort: ['Janv.', 'Févr.', 'Mars', 'Avril', 'Mai', 'Juin', 'Juil.', 'Août', 'Sept.', 'Oct.', 'Nov.', 'Déc.'],
-    dayNames: ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'],
+    monthNames: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+    monthNamesShort: ['jan.', 'fev.', 'mar', 'abr', 'maio', 'jun', 'jul.', 'ago', 'set.', 'out.', 'nov.', 'dez.'],
+    dayNames: ['Domingo', 'Segunda', 'Terça ', 'Quarta', 'Quinta', 'Sexta', 'Sábado'],
     dayNamesShort: ['Dom.', 'Seg.', 'Ter.', 'Quar.', 'Qui.', 'Sex.', 'Sab.'],
     today: 'Aujourd\'hui'
   };
@@ -95,6 +96,12 @@ export default function Scheduling({ route }) {
     const { parking } = route.params;
     setParking(parking);
   }, [route.params.parking])
+
+  useEffect(() => {
+    if (scheduling.successInclude) {
+      navigation.dispatch(StackActions.popToTop());
+    }
+  }, [scheduling.successInclude])
 
   const hours = [
     '08:00',
@@ -141,7 +148,6 @@ export default function Scheduling({ route }) {
 
   const handleButton = () => {
     const data = {
-      scheduling: {
         date: selectedDate,
         avaliableTime: selectedHourStart,
         unavailableTime: selectedHourFinal,
@@ -150,10 +156,7 @@ export default function Scheduling({ route }) {
         userId: user.id,
         vehicleId: vehicleSchedule.id,
         parkingId: parking.id,
-        parkingSpaceId: 92,
         cardId: cCardSchedule.id,
-        companyId: parking.companyId,
-      }
     }
     dispatch(SchedulingActions.schedulingInclude(data));
   }
@@ -348,9 +351,11 @@ export default function Scheduling({ route }) {
   return (
     <SafeAreaView style={styles.container}>
 
-
       <StatusBar barStyle="light-content" translucent={true} backgroundColor="transparent" />
       {/* {!profileParking.getDataSuccess ? <View style={styles.indicator}><ActivityIndicator size='large' color='#59578e' /></View> : */}
+
+      <CustomProgressBar visible={scheduling.loading} />
+
       <HeaderImageScrollView
         maxHeight={MAX_HEIGHT}
         minHeight={MIN_HEIGHT}

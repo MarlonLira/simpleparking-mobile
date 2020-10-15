@@ -249,8 +249,12 @@ function* includeScheduling(action){
     console.log('aqui')
     const { values } = action.payload;
     const request = yield call(getApi.post, '/scheduling/', values);
+    
+    yield put(SchedulingAction.schedulingSuccessInclude());
 
+    AlertDialog('Sucesso', 'Agendamento realizado!', ['OK']);
   } catch (error) {
+    yield put(SchedulingAction.schedulingInclude());
     AlertDialog('Erro', error.response.data.message, ['OK']);
   }
 }

@@ -16,6 +16,7 @@ import ProfileParking from '../pages/ProfileParking/ProfileParking';
 
 const openScree = ({ navigation }) => (
   <StackCreate.Navigator>
+
     <StackCreate.Screen
       name=" "
       component={Main}
@@ -43,36 +44,36 @@ const openScree = ({ navigation }) => (
           height: 80,
         }
       }} />
+
+
+    
+    <StackCreate.Screen
+      name="ProfileParking"
+      component={ProfileParking}
+      options={{
+        headerBackTitleVisible: false,
+        headerTitle: false,
+        headerTransparent: true,
+        headerTintColor: '#fff'
+      }}
+    />
+    <StackCreate.Screen name="Scheduling" 
+    component={Scheduling} 
+    options={{
+      headerBackTitleVisible: false,
+      headerTitle: false,
+      headerTransparent: true,
+      headerTintColor: '#fff'
+    }}/>
+
   </StackCreate.Navigator>
 );
-
-const MainScreen = () => {
-  return (
-    <StackCreate.Navigator>
-      
-    </StackCreate.Navigator>
-  )
-}
-
 
 export default function AppRoutes() {
   return (
     <DrawerCreate.Navigator drawerContent={props => <DrawerComponent {...props} />}>
       <StackCreate.Screen name="openScree" component={openScree} />
-      <DrawerCreate.Screen name="Profile" component={ProfileStackScrenn} />
-      <DrawerCreate.Screen 
-        name="ProfileParking" 
-        component={ProfileParking}
-        options={{
-          headerBackTitleVisible: false,
-          headerTitle: false,
-          headerTransparent: true,
-          headerTintColor: '#fff'
-        }}
-      />
-      <StackCreate.Screen name="Scheduling" component={Scheduling} />
-
-     
+      <StackCreate.Screen name="Profile" component={ProfileStackScrenn} />
     </DrawerCreate.Navigator>
   );
 };
