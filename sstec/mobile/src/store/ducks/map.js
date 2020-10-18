@@ -5,6 +5,7 @@ export const Types = {
   MAP_REQUEST: 'MAP_REQUEST',
   MAP_DATA: 'MAP_DATA',
 }
+
 /**
  * Reducer
  */

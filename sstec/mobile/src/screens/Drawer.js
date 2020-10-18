@@ -9,11 +9,14 @@ import {
 } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { AuthContext } from '../../src/contexts/auth';
+import { useSelector } from 'react-redux'
+
+
 
 export default function DrawerComponent(props) {
 
   const { user, signOut } = useContext(AuthContext);
-
+  const { scheduling } = useSelector(state => state);
   return (
     <View style={{ flex: 1 }}>
       <DrawerContentScrollView {...props}>
@@ -63,19 +66,29 @@ export default function DrawerComponent(props) {
               label="Perfil"
               onPress={() => { props.navigation.navigate('Profile') }}
             />
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <DrawerItem
+                icon={({ color, size }) => (
+                  <>
+                    <Icon
+                      name="calendar"
+                      color={color}
+                      size={size}
+                    />
 
-            <DrawerItem
-              icon={({ color, size }) => (
-                <Icon
-                  name="calendar"
-                  color={color}
-                  size={size}
-                />
-              )}
-              label="Agendamentos"
-              onPress={() => { props.navigation.navigate('SchedulingList') }}
-            />
+                  </>
+                )}
+                label="Agendamentos"
+                onPress={() => { props.navigation.navigate('SchedulingList') }}
+              />
+              {
+                scheduling.notification ?
+                  <Icon name='circle' color="#59578e" size={19} />
+                : null
+              }
+            </View>
           </Drawer.Section>
+
         </View>
 
       </DrawerContentScrollView>

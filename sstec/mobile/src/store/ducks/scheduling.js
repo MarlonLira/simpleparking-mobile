@@ -20,6 +20,7 @@ const INITIAL_STATE = {
   errorInclude: false,
   successInclude: false,
   loading: false,
+  notification: false,
 };
 
 export default function scheduling(state = INITIAL_STATE, action) {
@@ -29,11 +30,11 @@ export default function scheduling(state = INITIAL_STATE, action) {
     case Types.SCHEDULING_DATA:
       return { ...state, request: false, schedulings: action.payload, }
     case Types.SCHEDULING_INCLUDE:
-      return { ...state, loading: true, errorInclude: false, successInclude: false}
+      return { ...state, loading: true, errorInclude: false, successInclude: false }
     case Types.SCHEDULING_ERROR_INCLUDE:
-      return { ...state, loading: false, errorInclude: true, successInclude: false}
+      return { ...state, loading: false, errorInclude: true, successInclude: false }
     case Types.SCHEDULING_SUCCESS_INCLUDE:
-      return { ...state, loading: false, errorInclude: false, successInclude: true}
+      return { ...state, loading: false, errorInclude: false, successInclude: true, notification: true, }
     default:
       return state;
   };
