@@ -15,6 +15,7 @@ export const Types = {
  * Reducer
  */
 const INITIAL_STATE = {
+  schedulings: [],
   request: false,
   errorInclude: false,
   successInclude: false,
@@ -23,6 +24,10 @@ const INITIAL_STATE = {
 
 export default function scheduling(state = INITIAL_STATE, action) {
   switch (action.type) {
+    case Types.SCHEDULING_REQUEST:
+      return { ...state, request: true, loading: false, errorInclude: false, successInclude: false }
+    case Types.SCHEDULING_DATA:
+      return { ...state, request: false, schedulings: action.payload, }
     case Types.SCHEDULING_INCLUDE:
       return { ...state, loading: true, errorInclude: false, successInclude: false}
     case Types.SCHEDULING_ERROR_INCLUDE:
@@ -39,6 +44,17 @@ export default function scheduling(state = INITIAL_STATE, action) {
  */
 
 export const Creators = {
+
+  //action GET
+  schedulingRequest: (idUser) => ({
+    type: Types.SCHEDULING_REQUEST,
+    payload: idUser,
+  }),
+
+  schedulingData: (schedulings) => ({
+    type: Types.SCHEDULING_DATA,
+    payload: schedulings,
+  }),
 
   //actions POST
   schedulingInclude: values => ({

@@ -43,8 +43,8 @@ export default function Profile() {
                     size={90}
                     style={{ marginTop: -60, elevation: 15 }}>
                   </Avatar.Image>
-                  <View style={{ marginLeft: 20 }}>
-                    <Title style={[styles.title, { marginTop: 15, marginBottom: 5 }]}> {profile.dataUser.name} </Title>
+                  <View>
+                    <Title style={[styles.title, { marginTop: 15, marginBottom: 5 }]}>{profile.dataUser.name}</Title>
                   </View>
                 </View>
               </View>

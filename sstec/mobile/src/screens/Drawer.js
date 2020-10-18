@@ -73,7 +73,7 @@ export default function DrawerComponent(props) {
                 />
               )}
               label="Agendamentos"
-              onPress={() => { props.navigation.navigate('Profile') }}
+              onPress={() => { props.navigation.navigate('SchedulingList') }}
             />
           </Drawer.Section>
         </View>

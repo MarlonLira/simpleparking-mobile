@@ -31,6 +31,7 @@ export default function* rootSaga() {
     takeLatest(ProfileParkingTypes.PROFILE_PARKING_REQUEST_SPACE, getParkingspace),
 
     takeLatest(SchedulingTypes.SCHEDULING_INCLUDE, includeScheduling),
+    takeLatest(SchedulingTypes.SCHEDULING_REQUEST, getScheduling),
   ]);
 };
 
@@ -244,17 +245,28 @@ function* getParkingspace(action) {
 /**
  * Scheduling 
  */
-function* includeScheduling(action){
+function* includeScheduling(action) {
   try {
-    console.log('aqui')
     const { values } = action.payload;
-    const request = yield call(getApi.post, '/scheduling/', values);
-    
+    const respone = yield call(getApi.post, '/scheduling/', values);
+
     yield put(SchedulingAction.schedulingSuccessInclude());
 
     AlertDialog('Sucesso', 'Agendamento realizado!', ['OK']);
   } catch (error) {
     yield put(SchedulingAction.schedulingInclude());
+    AlertDialog('Erro', error.response.data.message, ['OK']);
+  }
+};
+
+function* getScheduling(action) {
+  try {
+
+    const idUser = action.payload;
+    const respone = yield call(getApi.get, `/schedulings/userId/${idUser}`);
+    yield put(SchedulingAction.schedulingData(respone.data.result));
+
+  } catch (error) {
     AlertDialog('Erro', error.response.data.message, ['OK']);
   }
 }

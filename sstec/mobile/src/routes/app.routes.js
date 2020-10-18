@@ -3,8 +3,10 @@ import { TouchableOpacity, StyleSheet } from 'react-native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createStackNavigator } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/Ionicons';
+
 const DrawerCreate = createDrawerNavigator();
 const StackCreate = createStackNavigator();
+const standardColor = '#59578e';
 
 import Main from '../pages/Main/Main';
 import Map from '../pages/Map/Map'
@@ -13,6 +15,7 @@ import DrawerComponent from '../screens/Drawer';
 import ProfileStackScrenn from '../screens/ProfileScreen';
 import ProfileParkingScreen from '../screens/ProfileParkingScreen';
 import ProfileParking from '../pages/ProfileParking/ProfileParking';
+import SchedulingList from '../pages/Scheduling/SchedulingList';
 
 const openScree = ({ navigation }) => (
   <StackCreate.Navigator>
@@ -25,7 +28,7 @@ const openScree = ({ navigation }) => (
           <TouchableOpacity onPress={() => navigation.openDrawer()} style={styles.buttonHeader} activeOpacity={0.9}>
             <Icon
               name="menu-outline"
-              color="#59578e"
+              color={standardColor}
               size={40}
             >
             </Icon>
@@ -46,7 +49,7 @@ const openScree = ({ navigation }) => (
       }} />
 
 
-    
+
     <StackCreate.Screen
       name="ProfileParking"
       component={ProfileParking}
@@ -57,14 +60,27 @@ const openScree = ({ navigation }) => (
         headerTintColor: '#fff'
       }}
     />
-    <StackCreate.Screen name="Scheduling" 
-    component={Scheduling} 
-    options={{
-      headerBackTitleVisible: false,
-      headerTitle: false,
-      headerTransparent: true,
-      headerTintColor: '#fff'
-    }}/>
+    <StackCreate.Screen 
+      name="Scheduling"
+      component={Scheduling}
+      options={{
+        headerBackTitleVisible: false,
+        headerTitle: false,
+        headerTransparent: true,
+        headerTintColor: '#fff'
+      }} />
+
+    <StackCreate.Screen 
+      name="SchedulingList" 
+      component={SchedulingList} 
+      options={{
+        title: "Agendamentos",
+        headerTintColor: standardColor,
+        headerStyle: {
+          elevation: 0,
+        },       
+      }}
+    />
 
   </StackCreate.Navigator>
 );
