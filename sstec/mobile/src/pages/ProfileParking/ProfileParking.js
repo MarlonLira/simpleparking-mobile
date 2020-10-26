@@ -11,7 +11,7 @@ import {
   ActivityIndicator,
   TouchableOpacity,
 } from 'react-native';
-import HeaderImageScrollView, { TriggeringView } from 'react-native-image-header-scroll-view';
+import HeaderImageScrollView from 'react-native-image-header-scroll-view';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 import { Creators as ProfileParkingAction } from '../../store/ducks/profileParking';
@@ -30,8 +30,15 @@ export default function ProfileParking({ route }) {
   const navigation = useNavigation();
 
   useEffect(() => {
+    if (!isFocused) {
+      dispatch(ProfileParkingAction.exitScreen());
+    }
+  }, [isFocused]);
+
+  useEffect(() => {
     if (typeof route.params.parking.id !== "undefined") {
       dispatch(ProfileParkingAction.profileParkingRequestSpace(route.params.parking.id));
+      dispatch(ProfileParkingAction.profileparkingrequest(route.params.parking.id));
     }
   }, [route.params.parking.id]);
 
@@ -47,7 +54,7 @@ export default function ProfileParking({ route }) {
   };
 
   const handleBbtReservation = (data) => {
-    navigation.navigate('Scheduling', { parking: route.params.parking, space: data });
+    navigation.navigate('Scheduling', { parking: profileParking.profile, space: data });
   }
 
   const RenderSpaces = () => {
@@ -75,10 +82,8 @@ export default function ProfileParking({ route }) {
 
   return (
     <SafeAreaView style={styles.container}>
-
-
       <StatusBar barStyle="light-content" translucent={true} backgroundColor="transparent" />
-      {!profileParking.getDataSuccess ? <View style={styles.indicator}><ActivityIndicator size='large' color='#59578e' /></View> :
+      {!profileParking.getDataSuccess && !profileParking.getProfileSuccess ? <View style={styles.indicator}><ActivityIndicator size='large' color='#59578e' /></View> :
         <HeaderImageScrollView
           maxHeight={MAX_HEIGHT}
           minHeight={MIN_HEIGHT}
@@ -89,19 +94,19 @@ export default function ProfileParking({ route }) {
           )}
           renderForeground={() => (
             <View style={styles.titleContainer}>
-              <Text style={styles.imageTitle}>{route.params.parking.name}</Text>
+              <Text style={styles.imageTitle}>{profileParking.profile?.name}</Text>
             </View>
           )}
           renderFixedForeground={() => (
             <Animatable.View style={styles.navTitleView} ref={navTitleView}>
-              <Text style={styles.navTitle}>{route.params.parking.name}</Text>
+              <Text style={styles.navTitle}>{profileParking.profile?.name}</Text>
             </Animatable.View>
           )}
         >
-          <TriggeringView
+          <View
             style={styles.section}
-            onHide={() => navTitleView.current.fadeInUp(200)}
-            onDisplay={() => navTitleView.current.fadeOut(100)}
+            // onHide={() => navTitleView.current.fadeInUp(200)}
+            // onDisplay={() => navTitleView.current.fadeOut(100)}
           >
             <View style={styles.overview}>
               <Text style={styles.title}>Overview</Text>
@@ -111,7 +116,7 @@ export default function ProfileParking({ route }) {
                 <Text style={{ marginHorizontal: 2 }}>(450)</Text>
               </View>
             </View>
-          </TriggeringView>
+          </View>
 
           <View style={[styles.section, styles.sectionLarge]}>
             <RenderSpaces />
@@ -151,7 +156,6 @@ export default function ProfileParking({ route }) {
           </View>
 
         </HeaderImageScrollView>
-
       }
 
     </SafeAreaView >

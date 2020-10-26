@@ -3,6 +3,7 @@ import { TouchableOpacity, StyleSheet } from 'react-native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createStackNavigator } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/Ionicons';
+import Material from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const DrawerCreate = createDrawerNavigator();
 const StackCreate = createStackNavigator();
@@ -17,73 +18,82 @@ import ProfileParkingScreen from '../screens/ProfileParkingScreen';
 import ProfileParking from '../pages/ProfileParking/ProfileParking';
 import SchedulingList from '../pages/Scheduling/SchedulingList';
 
-const openScree = ({ navigation }) => (
-  <StackCreate.Navigator>
+import { useSelector } from 'react-redux'
 
-    <StackCreate.Screen
-      name=" "
-      component={Main}
-      options={{
-        headerLeft: () => (
-          <TouchableOpacity onPress={() => navigation.openDrawer()} style={styles.buttonHeader} activeOpacity={0.9}>
-            <Icon
-              name="menu-outline"
-              color={standardColor}
-              size={40}
-            >
-            </Icon>
-          </TouchableOpacity>
-        ),
-        headerTransparent: {
-          position: 'absolute',
-          backgroundColor: 'transparent',
-          zIndex: 100,
-          top: 0,
-          left: 0,
-          right: 0
-        },
-        headerStyle: {
-          backgroundColor: '#f4511e',
-          height: 80,
-        }
-      }} />
+const openScree = ({ navigation }) => {
+  const { scheduling } = useSelector(state => state);
+
+  return (
+    <StackCreate.Navigator>
+
+      <StackCreate.Screen
+        name=" "
+        component={Main}
+        options={{
+          headerLeft: () => (
+            <TouchableOpacity onPress={() => navigation.openDrawer()} style={styles.buttonHeader} activeOpacity={0.9}>
+              <Icon
+                name="menu-outline"
+                color={standardColor}
+                size={40}
+              >
+              </Icon>
+              {
+                scheduling.notification ?
+                  <Material name='circle' color="#59578e" size={19} style={{ marginLeft: -20 }} />
+                  : null
+              }
+            </TouchableOpacity>
+          ),
+          headerTransparent: {
+            position: 'absolute',
+            backgroundColor: 'transparent',
+            zIndex: 100,
+            top: 0,
+            left: 0,
+            right: 0
+          },
+          headerStyle: {
+            backgroundColor: '#f4511e',
+            height: 80,
+          }
+        }} />
 
 
 
-    <StackCreate.Screen
-      name="ProfileParking"
-      component={ProfileParking}
-      options={{
-        headerBackTitleVisible: false,
-        headerTitle: false,
-        headerTransparent: true,
-        headerTintColor: '#fff'
-      }}
-    />
-    <StackCreate.Screen 
-      name="Scheduling"
-      component={Scheduling}
-      options={{
-        headerBackTitleVisible: false,
-        headerTitle: false,
-        headerTransparent: true,
-        headerTintColor: '#fff'
-      }} />
+      <StackCreate.Screen
+        name="ProfileParking"
+        component={ProfileParking}
+        options={{
+          headerBackTitleVisible: false,
+          headerTitle: false,
+          headerTransparent: true,
+          headerTintColor: '#fff'
+        }}
+      />
+      <StackCreate.Screen
+        name="Scheduling"
+        component={Scheduling}
+        options={{
+          title: "", 
+          headerTintColor: standardColor
+        }} />
 
-    <StackCreate.Screen 
-      name="SchedulingList" 
-      component={SchedulingList} 
-      options={{
-        title: "Agendamentos",
-        headerTintColor: standardColor,
-        headerStyle: {
-          elevation: 0,
-        },       
-      }}
-    />
+      <StackCreate.Screen
+        name="SchedulingList"
+        component={SchedulingList}
+        options={{
+          title: "Agendamentos",
+          headerTintColor: standardColor,
+          headerStyle: {
+            elevation: 0,
+          },
+        }}
+      />
 
-  </StackCreate.Navigator>
-);
+    </StackCreate.Navigator>
+  )
+};
 
 export default function AppRoutes() {
   return (
@@ -96,6 +106,7 @@ export default function AppRoutes() {
 
 const styles = StyleSheet.create({
   buttonHeader: {
+    flexDirection: 'row',
     padding: 8,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
@@ -113,5 +124,7 @@ const styles = StyleSheet.create({
     shadowRadius: 9.11,
     elevation: 14,
     marginTop: Platform.OS === 'ios' ? 9 : 4.5,
+    minHeight: 20,
+    minWidth: 20,
   }
 });

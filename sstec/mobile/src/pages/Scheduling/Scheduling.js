@@ -14,7 +14,6 @@ import {
 } from 'react-native'
 import ButtonComponent from '../../components/Button';
 import InputTextComponent from '../../components/TextInput';
-import HeaderImageScrollView, { TriggeringView } from 'react-native-image-header-scroll-view';
 import Dialog from "react-native-dialog";
 import { Picker } from '@react-native-community/picker';
 import { DecryptValue } from '../../utils/crypto';
@@ -28,7 +27,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation, useIsFocused, StackActions } from '@react-navigation/native';
 import { AuthContext } from '../../contexts/auth';
 
-import * as Animatable from 'react-native-animatable';
 const MIN_HEIGHT = Platform.OS === 'ios' ? 90 : 90;
 const MAX_HEIGHT = 350;
 
@@ -43,14 +41,14 @@ export default function Scheduling({ route }) {
   const navigation = useNavigation();
 
   const [selectedDate, setSelectedDate] = useState('');
-  const [selectedHourStart, setSelectedHourStart] = useState(null);
-  const [selectedHourFinal, setSelectedHourFinal] = useState(null);
+  const [selectedHourStart, setSelectedHourStart] = useState('');
+  const [selectedHourFinal, setSelectedHourFinal] = useState('');
   const [listHours, setListHours] = useState([]);
   const [vehicle, setVehicle] = useState([]);
   const [cCard, setCCard] = useState([]);
   const [spacesSchedule, setSpcacesSchedule] = useState({});
-  const [vehicleSchedule, setVehicleSchedule] = useState(null);
-  const [cCardSchedule, setCCardSchedule] = useState(null);
+  const [vehicleSchedule, setVehicleSchedule] = useState('');
+  const [cCardSchedule, setCCardSchedule] = useState('');
   const [visible, setVisible] = useState(false);
   const [visibleStartTime, setVisibleStartTime] = useState(false);
   const [visibleFinalTime, setVisibleFinalTime] = useState(false);
@@ -59,6 +57,7 @@ export default function Scheduling({ route }) {
   const [hourFinal, setHourFinal] = useState('');
   const [space, setSpace] = useState('');
   const [parking, setParking] = useState({});
+  const [validateForm, setValidadeForm] = useState(false);
 
   LocaleConfig.locales['fr'] = {
     monthNames: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
@@ -148,20 +147,43 @@ export default function Scheduling({ route }) {
 
   const handleButton = () => {
     const data = {
-        date: selectedDate,
-        avaliableTime: selectedHourStart,
-        unavailableTime: selectedHourFinal,
-        value: spacesSchedule.value,
-        vehicleType: vehicleSchedule.type,
-        userId: user.id,
-        vehicleId: vehicleSchedule.id,
-        parkingId: parking.id,
-        cardId: cCardSchedule.id,
+      date: selectedDate,
+      avaliableTime: selectedHourStart,
+      unavailableTime: selectedHourFinal,
+      value: spacesSchedule.value,
+      vehicleType: vehicleSchedule.type,
+      userId: user.id,
+      vehicleId: vehicleSchedule.id,
+      parkingId: parking.id,
+      cardId: cCardSchedule.id,
     }
     dispatch(SchedulingActions.schedulingInclude(data));
   }
 
+  useEffect(() => {
+    if (selectedDate != ''
+      && selectedHourStart != ''
+      && selectedHourFinal != ''
+      && typeof spacesSchedule.value != "undefined"
+      && typeof vehicleSchedule.type != "undefined"
+      && parking != {}
+      && typeof cCardSchedule.id != "undefined") {
+      setValidadeForm(true);
+    }
+  }, [
+    selectedDate, 
+    selectedHourStart, 
+    selectedHourFinal, 
+    spacesSchedule.value, 
+    vehicleSchedule.type, 
+    user.id, 
+    vehicleSchedule.id,
+    parking.id,
+    cCardSchedule.id,
+  ]);
+
   const RenderCalendar = () => {
+    var date = new Date();
     return (
       <View style={{ alignItems: "center" }}>
         <Dialog.Container visible={visible} >
@@ -169,6 +191,7 @@ export default function Scheduling({ route }) {
 
           <Calendar
             onDayPress={(response) => handleDate(response)}
+            minDate={date}
           />
 
           <TouchableOpacity style={styles.cancel} activeOpacity={0.5} onPress={hideDialog}>
@@ -191,7 +214,7 @@ export default function Scheduling({ route }) {
 
               <TouchableOpacity
                 key={index}
-                style={[styles.dateItem, { margin: 10 }]}
+                style={[styles.dateItem, { margin: 10, width: '100%' }]}
                 onPress={() => handleHourStart(item)}
               >
                 <Text style={styles.dateItemNumber}>{item}</Text>
@@ -284,6 +307,7 @@ export default function Scheduling({ route }) {
 
     return (
       <View style={styles.panel}>
+        <StatusBar barStyle="light-content" backgroundColor="#59578e" />
 
         <InputTextComponent
           value={space}
@@ -342,7 +366,7 @@ export default function Scheduling({ route }) {
         </View>
 
         <View style={{ marginTop: 10, marginBottom: 30 }}>
-          <ButtonComponent text="Finalizar agendamento" onPress={handleButton}/>
+          <ButtonComponent text="Finalizar agendamento" onPress={handleButton} disabled={!validateForm} />
         </View>
       </View>
     );
@@ -351,41 +375,23 @@ export default function Scheduling({ route }) {
   return (
     <SafeAreaView style={styles.container}>
 
-      <StatusBar barStyle="light-content" translucent={true} backgroundColor="transparent" />
+
       {/* {!profileParking.getDataSuccess ? <View style={styles.indicator}><ActivityIndicator size='large' color='#59578e' /></View> : */}
 
       <CustomProgressBar visible={scheduling.loading} />
 
-      <HeaderImageScrollView
-        maxHeight={MAX_HEIGHT}
-        minHeight={MIN_HEIGHT}
-        maxOverlayOpacity={0.6}
-        minOverlayOpacity={0.3}
-        renderHeader={() => (
-          <Image source={require('../../Images/parking.jpg')} style={styles.image} />
-        )}
-        renderForeground={() => (
-          <View style={styles.titleContainer}>
-            <Text style={styles.imageTitle}></Text>
-          </View>
-        )}
-        renderFixedForeground={() => (
-          <Animatable.View style={styles.navTitleView} ref={navTitleView}>
-            <Text style={styles.navTitle}>Agendamento</Text>
-          </Animatable.View>
-        )}
-      >
-        <TriggeringView
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <View
           style={styles.section}
-          onHide={() => navTitleView.current.fadeInUp(200)}
-          onDisplay={() => navTitleView.current.fadeOut(100)}
+        // onHide={() => navTitleView.current.fadeInUp(200)}
+        // onDisplay={() => navTitleView.current.fadeOut(100)}
         >
           <View style={styles.overview}>
             <Text style={styles.panelTitle}> Agendamento </Text>
             <Text style={styles.panelSubtitle}> Selecione os dados conforme desejar </Text>
           </View>
 
-        </TriggeringView>
+        </View>
 
         <View>
           <RenderInner />
@@ -395,7 +401,7 @@ export default function Scheduling({ route }) {
         <RenderStartTime />
         <RenderFinalTime />
 
-      </HeaderImageScrollView>
+      </ScrollView>
       {/* } */}
 
     </SafeAreaView >
@@ -405,6 +411,7 @@ export default function Scheduling({ route }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#fff',
   },
   cancel: {
     height: 50,

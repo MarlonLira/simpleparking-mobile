@@ -122,8 +122,10 @@ const EditProfile = () => {
           </Text>
 
         </View>
-
         <View style={styles.action}>
+
+        
+
           <FontAwesome name="user-o" size={20} color="#59578e" />
           <TextInput
             value={name}

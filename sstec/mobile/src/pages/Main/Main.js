@@ -5,20 +5,23 @@ import {
   Dimensions,
   StyleSheet,
   PermissionsAndroid,
-  TextInput,
+  StatusBar,
   Animated,
   Image,
   Platform,
-  TouchableOpacity
+  TouchableOpacity,
+  Keyboard,
 } from 'react-native';
-import MapView, { Marker, Callout, PROVIDER_GOOGLE } from 'react-native-maps';;
-import Geolocation from 'react-native-geolocation-service'
+import MapView, { Callout } from 'react-native-maps';
+import Geolocation from 'react-native-geolocation-service';
 import { useNavigation } from '@react-navigation/native'
 import { useSelector, useDispatch } from 'react-redux';
 import { Creators as MapActions } from '../../store/ducks/map';
 import Icon from 'react-native-vector-icons/Ionicons';
 
-const GOOGLE_MAPS_APIKEY = 'AIzaSyBrGTfBFa0mZ9303uZOuvW-xYxHXtHRs2k';
+import Search from '../../components/Search';
+
+const GOOGLE_MAPS_APIKEY = "AIzaSyA8loQb30JgUK1WRk6Pb5aWwEkOyLbNE4Y";
 const backgroundColor = '#007256';
 const { height, width } = Dimensions.get('window');
 const CARD_HEIGHT = 250;
@@ -32,6 +35,7 @@ export default function Main() {
   const [userPosition, setUserPosition] = useState({ latitude: -8.028396, longitude: -34.907355 });
   const [parkings, setParkings] = useState([]);
   const [coordinate, setCoordinate] = useState([]);
+  const [scroll, setScroll] = useState(true);
 
   const dispatch = useDispatch();
   const { map } = useSelector(state => state);
@@ -41,6 +45,25 @@ export default function Main() {
   let mapIndex = 0;
   let mapAnimation = new Animated.Value(0);
   const _scrollView = React.useRef(null);
+
+  useEffect(() => {
+    Keyboard.addListener("keyboardDidShow", _keyboardDidShow);
+    Keyboard.addListener("keyboardDidHide", _keyboardDidHide);
+
+    // cleanup function
+    return () => {
+      Keyboard.removeListener("keyboardDidShow", _keyboardDidShow);
+      Keyboard.removeListener("keyboardDidHide", _keyboardDidHide);
+    };
+  }, []);
+
+  const _keyboardDidShow = () => {
+    setScroll(false);
+  };
+
+  const _keyboardDidHide = () => {
+    setScroll(true);
+  };
 
   useEffect(() => {
     mapAnimation.addListener(({ value }) => {
@@ -287,7 +310,7 @@ export default function Main() {
 
   return (
     <View style={styles.container}>
-
+      <StatusBar barStyle="light-content" translucent={true} backgroundColor="transparent" />
       {/* <View style={styles.searchBox}>
         <TextInput
           placeholder="Buscar estacionamentos"
@@ -299,6 +322,8 @@ export default function Main() {
 
       <RenderMap />
 
+      {/* <Search onSubmitEditing={Keyboard.dismiss} /> */}
+      
       <RenderScroll />
 
     </View>

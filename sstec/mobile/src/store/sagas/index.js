@@ -29,6 +29,7 @@ export default function* rootSaga() {
     takeLatest(MapATypes.MAP_REQUEST, getParkings),
 
     takeLatest(ProfileParkingTypes.PROFILE_PARKING_REQUEST_SPACE, getParkingspace),
+    takeLatest(ProfileParkingTypes.PROFILE_PARKING_REQUEST, getProfile),
 
     takeLatest(SchedulingTypes.SCHEDULING_INCLUDE, includeScheduling),
     takeLatest(SchedulingTypes.SCHEDULING_REQUEST, getScheduling),
@@ -234,13 +235,23 @@ function* getParkingspace(action) {
   try {
 
     const id = action.payload;
-    const respone = yield call(getApi.get, `/Parkingspace/parkingId/${id}`);
-    yield put(ProfileParkingAction.spaceData(respone.data.result));
+    const response = yield call(getApi.get, `/Parkingspace/parkingId/${id}`);
+    yield put(ProfileParkingAction.spaceData(response.data.result));
 
   } catch (error) {
     AlertDialog('Erro', error.response.data.message, ['OK']);
   };
 };
+
+function* getProfile(action) {
+  try {
+    const id = action.payload;
+    const response = yield call(getApi.get, `parking/${id}`);
+    yield put(ProfileParkingAction.profileData(response.data.result));
+  } catch (error) {
+    AlertDialog('Erro', error.response.data.message, ['OK']);
+  };
+}
 
 /**
  * Scheduling 
