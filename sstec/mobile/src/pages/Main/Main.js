@@ -21,7 +21,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 
 import Search from '../../components/Search';
 
-const GOOGLE_MAPS_APIKEY = "AIzaSyA8loQb30JgUK1WRk6Pb5aWwEkOyLbNE4Y";
+const GOOGLE_MAPS_APIKEY = "AIzaSyCElO0LOIBsmGNwhFZNegzZJg";
 const backgroundColor = '#007256';
 const { height, width } = Dimensions.get('window');
 const CARD_HEIGHT = 250;

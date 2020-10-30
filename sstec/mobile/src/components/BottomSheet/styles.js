@@ -11,7 +11,7 @@ export const ModalArea = styled.View`
 `;
 
 export const ModalBody = styled.View`
-  background-color: hsl(242,24%,60%);
+  background-color: #fff;
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
   min-height: 300px;

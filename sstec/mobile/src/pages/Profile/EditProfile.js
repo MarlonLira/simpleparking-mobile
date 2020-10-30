@@ -8,6 +8,7 @@ import {
   TextInput,
   Platform,
   Dimensions,
+  Modal,
 } from 'react-native';
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -15,13 +16,18 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
 
 import Animated from 'react-native-reanimated';
-import BottomSheet from 'reanimated-bottom-sheet';
+import ButtonComponent from '../../components/Button';
+import InputTextComponent from '../../components/TextInput';
+import StatusBarComponent from '../../components/StatusBar';
+import BottomSheet from '../../components/BottomSheet';
 
 import { useSelector, useDispatch } from 'react-redux';
 import { Creators as ProfileActions } from '../../store/ducks/profile';
 import { InputMask, Type, RemoveMask } from '../../components/InputMask';
 import CustomProgressBar from '../../components/CustomProgressBar';
 import { useNavigation } from '@react-navigation/native';
+
+import { RNCamera } from 'react-native-camera';
 
 const EditProfile = () => {
 
@@ -32,6 +38,11 @@ const EditProfile = () => {
   const [name, setName] = useState(profile.dataUser.name);
   const [email, setEmail] = useState(profile.dataUser.email);
   const [phone, setPhone] = useState(profile.dataUser.phone);
+  const [show, setShow] = useState(false);
+
+  const [showCamera, setShowCamera] = useState(false);
+  const [typeCamera, setTypeCamera] = useState(RNCamera.Constants.Type.back);
+  const [photo, setPhoto] = useState(null);
 
   const { height } = Dimensions.get('window');
 
@@ -44,67 +55,114 @@ const EditProfile = () => {
   const handleSubmit = () => {
 
     var values = {
-        id: profile.dataUser.id,
-        name: name,
-        email: email,
-        phone: RemoveMask(phone, Type.PHONE),
+      id: profile.dataUser.id,
+      name: name,
+      email: email,
+      phone: RemoveMask(phone, Type.PHONE),
     };
 
     dispatch(ProfileActions.editRequest(values));
   };
 
-  const renderInner = () => (
-    <View style={styles.panel}>
+  const handleCloseButton = () => setShow(false);
+
+  const takePicture = async (camera) => {
+
+    const options = { quality: 0.5, base64: true }
+    const data = await camera.takePictureAsync(options);
+
+    setPhoto(data.uri);
+
+    setShowCamera(false);
+  }
+
+  const toggleCam = () => {
+    setTypeCamera(typeCamera === RNCamera.Constants.Type.back ? RNCamera.Constants.Type.front : RNCamera.Constants.Type.back);
+  };
+
+  const RenderCamera = () => {
+    return (
+      <Modal
+        transparent={false}
+        visible={showCamera}
+        animationType="slide"
+      >
+        <RNCamera
+          type={typeCamera}
+          style={styles.preview}
+          flashMode={RNCamera.Constants.FlashMode.auto}
+        >
+          {({ camera, status, recordAndroidPermissionStatus }) => {
+            if (status !== 'READY') return <View />;
+            return (
+              <View style={styles.lineCamera}>
+
+                <TouchableOpacity style={styles.buttonCamera} onPress={() => { }}>
+                  <Text>Album</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.buttonCamera} onPress={() => takePicture(camera)}>
+                  <Text>Foto</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.buttonCamera} onPress={toggleCam}>
+                  <Text>Trocar</Text>
+                </TouchableOpacity>
+
+              </View>
+            )
+          }}
+        </RNCamera>
+
+        <TouchableOpacity style={styles.buttonClose} onPress={() => setShowCamera(false)}>
+          <Text>Fechar</Text>
+        </TouchableOpacity>
+      </Modal>
+    )
+  }
+
+  const RenderInner = () => (
+    <View >
       <View style={{ alignItems: 'center' }}>
         <Text style={styles.panelTitle}> Upload foto </Text>
         <Text style={styles.panelSubtitle}> Selecione sua foto preferida </Text>
       </View>
-      <TouchableOpacity style={styles.panelButton}>
-        <Text style={styles.panelButtonTitle}> Tirar foto </Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.panelButton}>
-        <Text style={styles.panelButtonTitle}> Escolha da Biblioteca </Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.panelButton} onPress={() => bs.current.snapTo(1)}>
-        <Text style={styles.panelButtonTitle}> Cancelar  </Text>
-      </TouchableOpacity>
-    </View>
-  );
-
-  const renderHeader = () => (
-    <View style={styles.header}>
-      <View style={styles.panelHeader}>
-        <View style={styles.panelHandle}>
-
-        </View>
+      <View style={{ marginTop: 10, marginBottom: 30 }}>
+        <ButtonComponent text="Tirar foto" onPress={() => { setShowCamera(true) }} />
+      </View>
+      <View style={{ marginTop: 10, marginBottom: 30 }}>
+        <ButtonComponent text="Escolha da Biblioteca" onPress={() => { }} />
+      </View>
+      <View style={{ marginTop: 10, marginBottom: 30 }}>
+        <ButtonComponent text="Cancelar" onPress={() => setShow(false)} />
       </View>
     </View>
   );
 
-  const bs = React.createRef();
-  const fall = new Animated.Value(1);
-
   return (
     <View style={[styles.container, { height }]}>
 
+      <StatusBarComponent />
+
       <Animated.View style={{
         margin: 20,
-        opacity: Animated.add(0.1, Animated.multiply(fall, 1.0)),
       }}>
         <CustomProgressBar visible={profile.loadingEdit} />
 
         <View style={{ alignItems: 'center' }}>
-          <TouchableOpacity onPress={() => bs.current.snapTo(0)}>
+          <TouchableOpacity onPress={() => setShow(true)}>
             <View style={{
               height: 100,
               width: 100,
               borderRadius: 15,
               justifyContent: 'center',
               alignItems: 'center',
+              borderColor: '#000',
+              borderWidth: 1
             }}>
               <ImageBackground
                 source={{
-                  uri: 'https://api.adorable.io/avatars/50/abott@adorable.png'
+                  uri: photo
                 }}
                 style={{ height: 100, width: 100 }}
                 imageStyle={{ borderRadius: 15 }}
@@ -123,9 +181,6 @@ const EditProfile = () => {
 
         </View>
         <View style={styles.action}>
-
-        
-
           <FontAwesome name="user-o" size={20} color="#59578e" />
           <TextInput
             value={name}
@@ -136,6 +191,7 @@ const EditProfile = () => {
             autoCorrect={false}
           />
         </View>
+
         <View style={styles.action}>
           <FontAwesome name="envelope-o" size={20} color="#59578e" />
           <TextInput
@@ -148,6 +204,7 @@ const EditProfile = () => {
             autoCorrect={false}
           />
         </View>
+
         <View style={styles.action}>
           <Feather name="phone" size={20} color="#59578e" />
           <InputMask
@@ -163,21 +220,17 @@ const EditProfile = () => {
           />
         </View>
 
-        <TouchableOpacity style={styles.commandButton} onPress={handleSubmit}>
-          <Text style={styles.panelButtonTitle}> Salvar </Text>
-        </TouchableOpacity>
+        <View style={{ marginTop: 10, marginBottom: 30 }}>
+          <ButtonComponent text="Salvar" onPress={handleSubmit} />
+        </View>
       </Animated.View>
 
       <BottomSheet
-        ref={bs}
-        snapPoints={[330, 0]}
-        renderContent={renderInner}
-        renderHeader={renderHeader}
-        initialSnap={1}
-        callbackNode={fall}
-        enabledGestureInteraction={true}
+        body={<RenderInner />}
+        show={show}
+        handleCloseButton={handleCloseButton}
       />
-
+      <RenderCamera />
     </View>
   );
 };
@@ -206,13 +259,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#fff',
     borderRadius: 10,
-  },
-  commandButton: {
-    padding: 13,
-    borderRadius: 10,
-    backgroundColor: '#59578e',
-    alignItems: 'center',
-    marginTop: 10,
   },
   panel: {
     padding: 20,
@@ -264,11 +310,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginVertical: 7,
   },
-  panelButtonTitle: {
-    fontSize: 17,
-    fontWeight: 'bold',
-    color: 'white',
-  },
   action: {
     flexDirection: 'row',
     marginTop: 5,
@@ -292,5 +333,39 @@ const styles = StyleSheet.create({
   },
   colorPattern: {
     color: '#59578e',
-  }
+  },
+  preview: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+  },
+  lineCamera: {
+    marginBottom: 35,
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    justifyContent: 'space-between',
+  },
+  buttonCamera: {
+    flex: 0,
+    backgroundColor: '#FFF',
+    borderRadius: 5,
+    padding: 15,
+    paddingHorizontal: 20,
+    alignSelf: 'center',
+    alignItems: 'center',
+    margin: 20,
+    width: 100,
+  },
+  buttonClose: {
+    backgroundColor: '#FFF',
+    borderRadius: 5,
+    padding: 15,
+    paddingHorizontal: 20,
+    alignItems: 'center',
+    position: 'absolute',
+    margin: 20,
+    width: 100,
+    right: 25,
+    top: 60,
+  },
 });

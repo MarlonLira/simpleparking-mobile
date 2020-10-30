@@ -6158,6 +6158,11 @@ react-native-ico@^28.7.4:
     react-native-ico-universalicons "^3.1.2"
     react-svg-main "^2.2.3"
 
+react-native-image-crop-picker@^0.35.1:
+  version "0.35.1"
+  resolved "https://registry.yarnpkg.com/react-native-image-crop-picker/-/react-native-image-crop-picker-0.35.1.tgz#590b6ed7af7b63a505132c73819c9166347bf1e3"
+  integrity sha512-5HY2NnkmgL/Nw1IpU9CkTWj4qgFYPF8KxDaHoaufEWNjvOCRGziMoui55cO7k4KdwsIKmb1UbDzkCYemJqcyow==
+
 react-native-image-header-scroll-view@^0.10.3:
   version "0.10.3"
   resolved "https://registry.yarnpkg.com/react-native-image-header-scroll-view/-/react-native-image-header-scroll-view-0.10.3.tgz#1de117fc6a8735aa345a8e6d3bf22f45c4c41742"
@@ -6212,13 +6217,6 @@ react-native-paper@^4.1.0:
     "@callstack/react-theme-provider" "^3.0.5"
     color "^3.1.2"
     react-native-safe-area-view "^0.14.9"
-
-react-native-places-input@^1.1.7:
-  version "1.1.7"
-  resolved "https://registry.yarnpkg.com/react-native-places-input/-/react-native-places-input-1.1.7.tgz#8e36fdd87e1f855d72029f7e2b670f7832a2872c"
-  integrity sha512-Gxl6bNFGK8vCagTRjONKspdgpGs+pGSu/Y3Bp7XZqFaowekhDdQYfs6yXe+WZofH/EmNzFH40jKc83URvqYPXQ==
-  dependencies:
-    prop-types "^15.7.2"
 
 react-native-reanimated@^1.9.0:
   version "1.9.0"

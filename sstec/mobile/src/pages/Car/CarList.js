@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, ActivityIndicator, TouchableOpacity } from 'react-native';
+import StatusBarComponent from '../../components/StatusBar';
 import { Creators as CarActions } from '../../store/ducks/car';
 import { useDispatch, useSelector } from 'react-redux';
 import Dialog from "react-native-dialog";
@@ -97,6 +98,7 @@ const CarList = () => {
 
   return (
     <View style={styles.container}>
+      <StatusBarComponent />
       {car.onDelete ? <CustomProgressBar /> : null}
       { car.loadingData ?
         <View style={styles.loading}>

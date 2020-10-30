@@ -12,6 +12,7 @@ const TextInput = ({
   icon,
   label,
   editable,
+  keyboardType,
 }) => {
   return (
     <>
@@ -27,6 +28,7 @@ const TextInput = ({
         autoCorrect={autoCorrect}
         maxLength={maxLength}
         editable={editable}
+        keyboardType={keyboardType}
       />
     </Action>
     </>

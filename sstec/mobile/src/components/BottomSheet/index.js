@@ -16,11 +16,10 @@ const BottomSheet = ({ show, handleCloseButton, body }) => {
         visible={show}
         animationType="slide"
       >
-
         <ModalArea>
           <ModalBody>
             <CloseButton onPress={handleCloseButton}>
-              <MaterialIcons name="expand-more" size={40} color="#fff" />
+              <MaterialIcons name="expand-more" size={40} color="#000" />
             </CloseButton>
             {body}
           </ModalBody>
