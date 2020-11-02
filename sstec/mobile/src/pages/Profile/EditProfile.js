@@ -20,6 +20,7 @@ import ButtonComponent from '../../components/Button';
 import InputTextComponent from '../../components/TextInput';
 import StatusBarComponent from '../../components/StatusBar';
 import BottomSheet from '../../components/BottomSheet';
+import ImagePiker from 'react-native-image-picker';
 
 import { useSelector, useDispatch } from 'react-redux';
 import { Creators as ProfileActions } from '../../store/ducks/profile';
@@ -38,11 +39,12 @@ const EditProfile = () => {
   const [name, setName] = useState(profile.dataUser.name);
   const [email, setEmail] = useState(profile.dataUser.email);
   const [phone, setPhone] = useState(profile.dataUser.phone);
-  const [show, setShow] = useState(false);
+  const [photo, setPhoto] = useState(profile.dataUser?.image);
 
+  const [show, setShow] = useState(false);
   const [showCamera, setShowCamera] = useState(false);
   const [typeCamera, setTypeCamera] = useState(RNCamera.Constants.Type.back);
-  const [photo, setPhoto] = useState(null);
+  
 
   const { height } = Dimensions.get('window');
 
@@ -80,6 +82,25 @@ const EditProfile = () => {
     setTypeCamera(typeCamera === RNCamera.Constants.Type.back ? RNCamera.Constants.Type.front : RNCamera.Constants.Type.back);
   };
 
+  const openLibrary = () => {
+    const options = {
+      tite: 'Selecione uma foto',
+      chooseFromLibraryButtonTitle: 'Buscar foto...',
+      noData: true,
+      mediatype: 'photo',
+    };
+
+    ImagePiker.launchImageLibrary(options, (response) => {
+      if (response.didCancel) {
+
+      } else if (response.error) {
+
+      } else {
+        setPhoto(response.uri);
+      }
+    })
+  };
+
   const RenderCamera = () => {
     return (
       <Modal
@@ -97,10 +118,6 @@ const EditProfile = () => {
             return (
               <View style={styles.lineCamera}>
 
-                <TouchableOpacity style={styles.buttonCamera} onPress={() => { }}>
-                  <Text>Album</Text>
-                </TouchableOpacity>
-
                 <TouchableOpacity style={styles.buttonCamera} onPress={() => takePicture(camera)}>
                   <Text>Foto</Text>
                 </TouchableOpacity>
@@ -115,7 +132,7 @@ const EditProfile = () => {
         </RNCamera>
 
         <TouchableOpacity style={styles.buttonClose} onPress={() => setShowCamera(false)}>
-          <Text>Fechar</Text>
+          <Text>X</Text>
         </TouchableOpacity>
       </Modal>
     )
@@ -131,7 +148,7 @@ const EditProfile = () => {
         <ButtonComponent text="Tirar foto" onPress={() => { setShowCamera(true) }} />
       </View>
       <View style={{ marginTop: 10, marginBottom: 30 }}>
-        <ButtonComponent text="Escolha da Biblioteca" onPress={() => { }} />
+        <ButtonComponent text="Escolha da Biblioteca" onPress={openLibrary} />
       </View>
       <View style={{ marginTop: 10, marginBottom: 30 }}>
         <ButtonComponent text="Cancelar" onPress={() => setShow(false)} />
@@ -157,7 +174,7 @@ const EditProfile = () => {
               borderRadius: 15,
               justifyContent: 'center',
               alignItems: 'center',
-              borderColor: '#000',
+              borderColor: '#59578e',
               borderWidth: 1
             }}>
               <ImageBackground
@@ -168,7 +185,7 @@ const EditProfile = () => {
                 imageStyle={{ borderRadius: 15 }}
               >
                 <View style={styles.centerItens}>
-                  <Icon name="camera" size={35} color='#fff' style={styles.iconCamera}>
+                  <Icon name="camera" size={35} color='#000' style={styles.iconCamera}>
                   </Icon>
                 </View>
               </ImageBackground>
@@ -363,8 +380,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     alignItems: 'center',
     position: 'absolute',
-    margin: 20,
-    width: 100,
+    margin: 5,
+    width: 50,
     right: 25,
     top: 60,
   },
