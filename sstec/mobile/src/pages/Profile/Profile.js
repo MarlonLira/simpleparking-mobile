@@ -1,10 +1,10 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { View, SafeAreaView, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
 import { Avatar, Title, Caption, Text, TouchableRipple } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
 import Material from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useNavigation } from '@react-navigation/native'
+import { useNavigation } from '@react-navigation/native';
 
 import { AuthContext } from '../../contexts/auth';
 
@@ -38,7 +38,7 @@ export default function Profile() {
                 <View style={styles.startView}>
                   <Avatar.Image
                     source={{
-                      uri: 'https://api.adorable.io/avatars/50/abott@adorable.png',
+                      uri: profile.photoProfile,
                     }}
                     size={90}
                     style={{ marginTop: -60, elevation: 15 }}>

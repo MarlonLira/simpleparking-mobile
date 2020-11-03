@@ -5,8 +5,9 @@
 export const Types = {
   USER: {
     REQUEST: 'USER_REQUEST',
-    DATA: 'DATA_USER'
-  }, 
+    DATA: 'DATA_USER',
+    PHOTO: 'PHOTO_USER',
+  },
   EDIT: {
     REQUEST: 'EDIT_REQUEST',
     SUCCESS: 'EDIT_SUCCESS',
@@ -20,11 +21,12 @@ export const Types = {
  */
 const INITIAL_STATE = {
   dataUser: {},
-  loading: false,
+  loading: true,
   errorLoading: false,
   loadingEdit: false,
   errorEdit: false,
   goBack: false,
+  photoProfile: null,
 };
 
 export default function profile(state = INITIAL_STATE, action) {
@@ -39,8 +41,10 @@ export default function profile(state = INITIAL_STATE, action) {
       return { ...state, errorLoading: false, loadingEdit: false, goBack: true, };
     case Types.EDIT.FAILURE:
       return { ...state, errorEdit: true, loadingEdit: false, goBack: false, };
-    case Types.EDIT.OFF_EDIT: 
+    case Types.EDIT.OFF_EDIT:
       return { ...state, goBack: false, }
+    case Types.USER.PHOTO:
+      return { ...state, photoProfile: action.payload }
     default:
       return state;
   };
@@ -75,5 +79,10 @@ export const Creators = {
 
   offEdit: () => ({
     type: Types.EDIT.OFF_EDIT,
+  }),
+
+  getPhoto: (photo) => ({
+    type: Types.USER.PHOTO,
+    payload: photo,
   }),
 };

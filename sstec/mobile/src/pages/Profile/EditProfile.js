@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
   View,
   Text,
@@ -9,6 +9,7 @@ import {
   Platform,
   Dimensions,
   Modal,
+  PermissionsAndroid,
 } from 'react-native';
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -21,30 +22,35 @@ import InputTextComponent from '../../components/TextInput';
 import StatusBarComponent from '../../components/StatusBar';
 import BottomSheet from '../../components/BottomSheet';
 import ImagePiker from 'react-native-image-picker';
+import CameraRoll from '@react-native-community/cameraroll';
+import AsyncStorage from '@react-native-community/async-storage';
 
 import { useSelector, useDispatch } from 'react-redux';
 import { Creators as ProfileActions } from '../../store/ducks/profile';
 import { InputMask, Type, RemoveMask } from '../../components/InputMask';
 import CustomProgressBar from '../../components/CustomProgressBar';
 import { useNavigation } from '@react-navigation/native';
+import { AuthContext } from '../../contexts/auth';
 
 import { RNCamera } from 'react-native-camera';
 
 const EditProfile = () => {
 
   const dispatch = useDispatch();
+  const { getPhoto } = useContext(AuthContext);
   const { profile } = useSelector(state => state);
   const navigation = useNavigation();
 
   const [name, setName] = useState(profile.dataUser.name);
   const [email, setEmail] = useState(profile.dataUser.email);
   const [phone, setPhone] = useState(profile.dataUser.phone);
-  const [photo, setPhoto] = useState(profile.dataUser?.image);
+  const [photo, setPhoto] = useState(profile.photoProfile);
+  const [sendPhoto, setSendPhoto] = useState('');
 
   const [show, setShow] = useState(false);
   const [showCamera, setShowCamera] = useState(false);
   const [typeCamera, setTypeCamera] = useState(RNCamera.Constants.Type.back);
-  
+
 
   const { height } = Dimensions.get('window');
 
@@ -61,6 +67,7 @@ const EditProfile = () => {
       name: name,
       email: email,
       phone: RemoveMask(phone, Type.PHONE),
+      image: sendPhoto,
     };
 
     dispatch(ProfileActions.editRequest(values));
@@ -73,9 +80,49 @@ const EditProfile = () => {
     const options = { quality: 0.5, base64: true }
     const data = await camera.takePictureAsync(options);
 
+    setSendPhoto(data.base64);
+
     setPhoto(data.uri);
 
+    savePicture(data.uri);
+
     setShowCamera(false);
+
+    getPhoto();
+  };
+
+  const hasAndroidPermission = async () => {
+    const Permission = PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE;
+
+    const hasPermission = await PermissionsAndroid.check(Permission);
+
+    if (hasPermission) {
+      return true;
+    };
+
+    const status = await PermissionsAndroid.request(Permission);
+
+    return status === 'granted';
+  };
+
+  const savePicture = async (data) => {
+    if (Platform.OS === 'android' && !(await hasAndroidPermission())) {
+      return;
+    };
+
+    CameraRoll.save(data, 'photo')
+      .then((res) => {
+        console.log('Salvo com sucesso: ' + res);
+        savePhoto(res);
+      }).catch((error) => {
+        console.log('Error ao salvar: ' + error);
+      });
+  };
+
+  const savePhoto = async (data) => {
+    await AsyncStorage.removeItem('Photo_user');
+    await AsyncStorage.setItem('Photo_user', data);
+    getPhoto();
   }
 
   const toggleCam = () => {
@@ -97,6 +144,7 @@ const EditProfile = () => {
 
       } else {
         setPhoto(response.uri);
+        savePhoto(response.uri);
       }
     })
   };

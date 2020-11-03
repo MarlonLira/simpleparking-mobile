@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { View, StyleSheet } from 'react-native'
 import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
 import {
@@ -9,14 +9,19 @@ import {
 } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { AuthContext } from '../../src/contexts/auth';
-import { useSelector } from 'react-redux'
-
-
+import { useSelector } from 'react-redux';
 
 export default function DrawerComponent(props) {
 
+  const [photo, setPhoto] = useState(null);
+
   const { user, signOut } = useContext(AuthContext);
-  const { scheduling } = useSelector(state => state);
+  const { scheduling, profile } = useSelector(state => state);
+
+  useEffect(() => {
+    setPhoto(profile.photoProfile);
+  }, [profile.photoProfile])
+
   return (
     <View style={{ flex: 1 }}>
       <DrawerContentScrollView {...props}>
@@ -25,7 +30,7 @@ export default function DrawerComponent(props) {
             <View style={{ flexDirection: 'row', marginTop: 15 }}>
               <Avatar.Image
                 source={{
-                  uri: 'https://api.adorable.io/avatars/50/abott@adorable.png'
+                  uri: photo,
                 }}
                 size={50}
               />
