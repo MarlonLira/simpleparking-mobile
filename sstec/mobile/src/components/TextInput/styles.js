@@ -1,7 +1,8 @@
 import styled from 'styled-components/native';
 import {
   Platform,
-} from 'react-native'
+} from 'react-native';
+import { TextInputMask } from 'react-native-masked-text';
 
 export const Action = styled.View`
   flex-direction: row;
@@ -22,4 +23,10 @@ export const TextStandard = styled.TextInput`
 export const Label = styled.Text`
   color: #000;
   font-size: 18px;
+`
+export const InputMask = styled(TextInputMask)`
+  margin-top: ${Platform.OS === 'ios' ? 0 : -12}px;
+  padding-left: 10px;
+  color: #59578e;
+  width: 100%;
 `

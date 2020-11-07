@@ -5,7 +5,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   ImageBackground,
-  TextInput,
   Platform,
   Dimensions,
   Modal,
@@ -13,12 +12,10 @@ import {
 } from 'react-native';
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import Feather from 'react-native-vector-icons/Feather';
 
 import Animated from 'react-native-reanimated';
 import ButtonComponent from '../../components/Button';
-import InputTextComponent from '../../components/TextInput';
+import { TextInputPattern, TextInputMask, typesIcon, Type, RemoveMask } from '../../components/TextInput';
 import StatusBarComponent from '../../components/StatusBar';
 import BottomSheet from '../../components/BottomSheet';
 import ImagePiker from 'react-native-image-picker';
@@ -27,7 +24,6 @@ import AsyncStorage from '@react-native-community/async-storage';
 
 import { useSelector, useDispatch } from 'react-redux';
 import { Creators as ProfileActions } from '../../store/ducks/profile';
-import { InputMask, Type, RemoveMask } from '../../components/InputMask';
 import CustomProgressBar from '../../components/CustomProgressBar';
 import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../../contexts/auth';
@@ -245,45 +241,38 @@ const EditProfile = () => {
           </Text>
 
         </View>
-        <View style={styles.action}>
-          <FontAwesome name="user-o" size={20} color="#59578e" />
-          <TextInput
-            value={name}
-            onChangeText={(text) => setName(text)}
-            placeholder='Nome'
-            placeholderTextColor='#666666'
-            style={styles.textInput}
-            autoCorrect={false}
-          />
-        </View>
 
-        <View style={styles.action}>
-          <FontAwesome name="envelope-o" size={20} color="#59578e" />
-          <TextInput
-            value={email}
-            onChangeText={text => setEmail(text)}
-            placeholder='E-mail'
-            placeholderTextColor='#666666'
-            keyboardType='email-address'
-            style={styles.textInput}
-            autoCorrect={false}
-          />
-        </View>
+        <TextInputPattern
+          icon="user-o"
+          typeIcon={typesIcon.FontAwesome}
+          value={name}
+          onChangeText={(text) => setName(text)}
+          placeholder='Nome'
+          autoCorrect={false}
+          mask={false}
+        />
 
-        <View style={styles.action}>
-          <Feather name="phone" size={20} color="#59578e" />
-          <InputMask
-            type={Type.PHONE}
-            value={phone}
-            onChangeText={text => setPhone(text)}
-            placeholder='Número'
-            placeholderTextColor='#666666'
-            keyboardType='number-pad'
-            style={styles.textInput}
-            autoCorrect={false}
-            maxLength={15}
-          />
-        </View>
+        <TextInputPattern
+          icon="envelope-o"
+          typeIcon={typesIcon.FontAwesome}
+          value={email}
+          onChangeText={text => setEmail(text)}
+          placeholder='E-mail'
+          keyboardType='email-address'
+          autoCorrect={false}
+        />
+
+        <TextInputMask
+          icon="phone"
+          typeIcon={typesIcon.Feather}
+          typeMask={Type.PHONE}
+          value={phone}
+          onChangeText={text => setPhone(text)}
+          placeholder='Número'
+          keyboardType='number-pad'
+          autoCorrect={false}
+          maxLength={15}
+        />
 
         <View style={{ marginTop: 10, marginBottom: 30 }}>
           <ButtonComponent text="Salvar" onPress={handleSubmit} />
@@ -336,28 +325,6 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     shadowOpacity: 0.4,
   },
-  header: {
-    backgroundColor: '#fff',
-    shadowColor: '#333333',
-    shadowOffset: { width: -1, height: -3 },
-    shadowRadius: 2,
-    shadowOpacity: 0.4,
-    elevation: 1,
-    paddingTop: 20,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    borderRightColor: 20,
-  },
-  panelHeader: {
-    alignItems: 'center',
-  },
-  panelHandle: {
-    width: 40,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#00000040',
-    marginBottom: 10,
-  },
   panelTitle: {
     fontSize: 27,
     height: 35,
@@ -367,37 +334,6 @@ const styles = StyleSheet.create({
     color: 'gray',
     height: 30,
     marginBottom: 10,
-  },
-  panelButton: {
-    padding: 13,
-    borderRadius: 10,
-    backgroundColor: '#59578e',
-    alignItems: 'center',
-    marginVertical: 7,
-  },
-  action: {
-    flexDirection: 'row',
-    marginTop: 5,
-    marginBottom: 5,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f2f2f2',
-    paddingBottom: 5,
-  },
-  actionError: {
-    flexDirection: 'row',
-    marginTop: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#FF0000',
-    paddingBottom: 5,
-  },
-  textInput: {
-    flex: 1,
-    marginTop: Platform.OS === 'ios' ? 0 : -12,
-    paddingLeft: 10,
-    color: '#05375a',
-  },
-  colorPattern: {
-    color: '#59578e',
   },
   preview: {
     flex: 1,

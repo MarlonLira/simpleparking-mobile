@@ -8,10 +8,9 @@ import {
   Platform,
 } from 'react-native';
 
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import Feather from 'react-native-vector-icons/Feather';
-import { InputMask, Type, RemoveMask } from '../../components/InputMask';
+import { TextInputPattern, TextInputMask, typesIcon, Type, RemoveMask } from '../../components/TextInput';
+import ButtonComponent from '../../components/Button';
 import { getCardFlag } from '../../utils/Functions';
 import * as Animatable from 'react-native-animatable';
 
@@ -123,27 +122,24 @@ const CreditCard = ({ route }) => {
       <CustomProgressBar visible={creditCard.loading} />
 
       <View style={styles.area}>
-        <View style={[styles.action, { width: '90%' }]}>
-          <FontAwesome name="credit-card" size={20} color="#59578e" />
+        <View style={{ width: '90%' }}>
           {!creditCard.onEdit ?
-            <InputMask
-              type={Type.CARD}
+            <TextInputMask
+              icon="credit-card"
+              typeIcon={typesIcon.FontAwesome}
+              typeMask={Type.CARD}
               value={number}
               onChangeText={text => { setNumber(text); setFlag(getCardFlag(text)); }}
               placeholder='Número'
-              placeholderTextColor='#666666'
               keyboardType='number-pad'
-              style={styles.textInput}
               autoCorrect={false}
               maxLength={19}
             />
             :
-            <TextInput
+            <TextInputPattern
               value={number}
               onChangeText={text => { setNumber(text) }}
               placeholder='Número'
-              placeholderTextColor='#666666'
-              style={[styles.textInput, { fontWeight: "bold" }]}
               autoCorrect={false}
               editable={false}
             />
@@ -165,57 +161,48 @@ const CreditCard = ({ route }) => {
         }
 
         <View style={styles.line}>
-          <View style={[styles.action, { width: '50%', marginRight: '10%' }]}>
-            <Icon name="calendar" size={20} color="#59578e" />
-            <InputMask
-              type={Type.DATE}
+          <View style={{ width: '50%', marginRight: '10%' }}>
+            <TextInputPattern
+              typeIcon={typesIcon.MaterialCommunityIcons}
+              icon="calendar"
+              typeMask={Type.DATE}
               value={expiry}
               onChangeText={text => { setExpiry(text); }}
               placeholder='Validade'
-              placeholderTextColor='#666666'
               keyboardType='number-pad'
-              style={styles.textInput}
               autoCorrect={false}
               maxLength={5}
             />
           </View >
-          <View style={[styles.action, { width: '40%' }]}>
-            <Feather name="lock" color="#59578e" size={20} />
-            <InputMask
-              type={Type.NUMBER}
+          <View style={{ width: '40%' }}>
+            <TextInputPattern
+              typeIcon={typesIcon.Feather}
+              icon="lock"
+              typeMask={Type.NUMBER}
               value={security}
               onChangeText={text => { setSecurity(text); }}
               placeholder='CVV'
-              placeholderTextColor='#666666'
               keyboardType='numeric'
-              style={styles.textInput}
               autoCorrect={false}
               maxLength={3}
             />
           </View>
         </View>
 
-        <View style={styles.action}>
-          <FontAwesome name="user-o" size={20} color="#59578e" />
-          <TextInput
+        <View>
+          <TextInputPattern
             value={holder}
             onChangeText={text => { setHolder(text) }}
             placeholder='Nome completo'
-            placeholderTextColor='#666666'
-            style={styles.textInput}
             autoCorrect={false}
+            icon="user-o"
+            typeIcon={typesIcon.FontAwesome}
           />
         </View>
-
-        <TouchableOpacity
-          activeOpacity={0.5}
-          disabled={disabled}
-          style={[styles.commandButton, disabled ? { backgroundColor: '#dddde8' } : { backgroundColor: '#59578e' }]}
-          onPress={handleSubmit}>
-
-          <Text style={styles.panelButtonTitle}> Salvar </Text>
-
-        </TouchableOpacity>
+        
+        <View style={{ marginTop: 10, marginBottom: 30 }}>
+          <ButtonComponent text="Salvar" onPress={handleSubmit} disabled={disabled} />
+        </View>
       </View>
     </View>
   )
@@ -230,37 +217,6 @@ const styles = StyleSheet.create({
   },
   area: {
     padding: 20,
-  },
-  textInput: {
-    marginTop: Platform.OS === 'ios' ? 0 : -12,
-    paddingLeft: 10,
-    color: '#59578e',
-    width: '100%'
-  },
-  text_footer: {
-    color: '#59578e',
-    fontSize: 18,
-    marginTop: 35,
-    marginBottom: 10
-  },
-  action: {
-    flexDirection: 'row',
-    marginTop: 5,
-    marginBottom: 5,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f2f2f2',
-    paddingBottom: 5,
-  },
-  commandButton: {
-    padding: 13,
-    borderRadius: 10,
-    alignItems: 'center',
-    marginTop: 10,
-  },
-  panelButtonTitle: {
-    fontSize: 17,
-    fontWeight: 'bold',
-    color: 'white',
   },
   line: {
     flexDirection: 'row',

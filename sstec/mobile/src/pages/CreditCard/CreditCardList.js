@@ -7,6 +7,7 @@ import { DecryptValue } from '../../utils/crypto';
 import Dialog from "react-native-dialog";
 import CustomProgressBar from '../../components/CustomProgressBar';
 import { useNavigation } from '@react-navigation/native';
+import StatusBarComponent from '../../components/StatusBar';
 
 
 const CreditCardList = () => {
@@ -99,6 +100,8 @@ const CreditCardList = () => {
 
   return (
     <View style={style.container}>
+      <StatusBarComponent />
+      
       {creditCard.onDelete ? <CustomProgressBar /> : null}
       { creditCard.loadingData ?
         <View style={style.loading}>

@@ -13,7 +13,7 @@ import {
   ScrollView,
 } from 'react-native'
 import ButtonComponent from '../../components/Button';
-import InputTextComponent from '../../components/TextInput';
+import InputTextComponent, { typesIcon } from '../../components/TextInput';
 import Dialog from "react-native-dialog";
 import { Picker } from '@react-native-community/picker';
 import { DecryptValue } from '../../utils/crypto';
@@ -43,7 +43,6 @@ export default function Scheduling({ route }) {
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedHourStart, setSelectedHourStart] = useState('');
   const [selectedHourFinal, setSelectedHourFinal] = useState('');
-  const [listHours, setListHours] = useState([]);
   const [vehicle, setVehicle] = useState([]);
   const [cCard, setCCard] = useState([]);
   const [spacesSchedule, setSpcacesSchedule] = useState({});
@@ -171,12 +170,12 @@ export default function Scheduling({ route }) {
       setValidadeForm(true);
     }
   }, [
-    selectedDate, 
-    selectedHourStart, 
-    selectedHourFinal, 
-    spacesSchedule.value, 
-    vehicleSchedule.type, 
-    user.id, 
+    selectedDate,
+    selectedHourStart,
+    selectedHourFinal,
+    spacesSchedule.value,
+    vehicleSchedule.type,
+    user.id,
     vehicleSchedule.id,
     parking.id,
     cCardSchedule.id,
@@ -315,6 +314,8 @@ export default function Scheduling({ route }) {
           icon={"grid"}
           label={'Vaga'}
           editable={false}
+          mask={false}
+          typeIcon={typesIcon.Feather}
         />
 
         <TouchableOpacity onPress={showDialog} activeOpacity={0.8}>
@@ -324,6 +325,8 @@ export default function Scheduling({ route }) {
             icon={"calendar"}
             label={'Data'}
             editable={false}
+            mask={false}
+            typeIcon={typesIcon.Feather}
           />
         </TouchableOpacity>
 
@@ -334,6 +337,8 @@ export default function Scheduling({ route }) {
             icon={"clock"}
             label={'Hora inicial'}
             editable={false}
+            mask={false}
+            typeIcon={typesIcon.Feather}
           />
         </TouchableOpacity>
 
@@ -344,6 +349,8 @@ export default function Scheduling({ route }) {
             icon={"calendar"}
             label={'Hora final'}
             editable={false}
+            mask={false}
+            typeIcon={typesIcon.Feather}
           />
         </TouchableOpacity>
 
