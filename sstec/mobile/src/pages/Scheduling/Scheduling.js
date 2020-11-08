@@ -13,7 +13,7 @@ import {
   ScrollView,
 } from 'react-native'
 import ButtonComponent from '../../components/Button';
-import InputTextComponent, { typesIcon } from '../../components/TextInput';
+import {TextInputPattern, typesIcon } from '../../components/TextInput';
 import Dialog from "react-native-dialog";
 import { Picker } from '@react-native-community/picker';
 import { DecryptValue } from '../../utils/crypto';
@@ -308,48 +308,44 @@ export default function Scheduling({ route }) {
       <View style={styles.panel}>
         <StatusBar barStyle="light-content" backgroundColor="#59578e" />
 
-        <InputTextComponent
+        <TextInputPattern
           value={space}
           placeholder='Tipo da vaga'
           icon={"grid"}
           label={'Vaga'}
           editable={false}
-          mask={false}
           typeIcon={typesIcon.Feather}
         />
 
         <TouchableOpacity onPress={showDialog} activeOpacity={0.8}>
-          <InputTextComponent
+          <TextInputPattern
             value={date}
             placeholder='Data do agendamento'
             icon={"calendar"}
             label={'Data'}
             editable={false}
-            mask={false}
             typeIcon={typesIcon.Feather}
           />
         </TouchableOpacity>
 
         <TouchableOpacity onPress={showDialogStartTime} activeOpacity={0.8}>
-          <InputTextComponent
+          <TextInputPattern
             value={hourStart}
             placeholder='Horário para chegada'
             icon={"clock"}
             label={'Hora inicial'}
             editable={false}
-            mask={false}
             typeIcon={typesIcon.Feather}
           />
         </TouchableOpacity>
 
         <TouchableOpacity onPress={showDialogFinalTime} activeOpacity={0.8}>
-          <InputTextComponent
+          <TextInputPattern
             value={hourFinal}
             placeholder='Horário para saída'
-            icon={"calendar"}
+            icon={"clock"}
             label={'Hora final'}
             editable={false}
-            mask={false}
             typeIcon={typesIcon.Feather}
           />
         </TouchableOpacity>
@@ -390,8 +386,6 @@ export default function Scheduling({ route }) {
       <ScrollView showsVerticalScrollIndicator={false}>
         <View
           style={styles.section}
-        // onHide={() => navTitleView.current.fadeInUp(200)}
-        // onDisplay={() => navTitleView.current.fadeOut(100)}
         >
           <View style={styles.overview}>
             <Text style={styles.panelTitle}> Agendamento </Text>

@@ -3,21 +3,16 @@ import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
-  TextInput,
-  Platform,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { Creators as CarActions } from '../../store/ducks/car';
 
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import Feather from 'react-native-vector-icons/Feather';
-import Material from 'react-native-vector-icons/MaterialCommunityIcons';
-import Ionic from 'react-native-vector-icons/Ionicons';
 import { Picker } from '@react-native-community/picker';
 import CustomProgressBar from '../../components/CustomProgressBar';
 import { useNavigation } from '@react-navigation/native';
 import { useIsFocused } from '@react-navigation/native';
+import { TextInputPattern, typesIcon } from '../../components/TextInput';
+import ButtonComponent from '../../components/Button';
 
 const Car = ({ route }) => {
 
@@ -79,20 +74,18 @@ const Car = ({ route }) => {
 
   const handleSubmit = () => {
     const values = {
-        model: model,
-        color: color,
-        type: type,
-        licensePlate: licensePlate,
-        userId: profile.dataUser.id,
-        id: idCar
+      model: model,
+      color: color,
+      type: type,
+      licensePlate: licensePlate,
+      userId: profile.dataUser.id,
+      id: idCar
     };
-    
+
     !car.onEdit ?
       dispatch(CarActions.carInclude(values)) :
       dispatch(CarActions.carEditItem(values));
   };
-
-
 
   return (
     <View style={styles.container}>
@@ -101,29 +94,23 @@ const Car = ({ route }) => {
 
       <View style={styles.area}>
 
-        <View style={styles.action}>
-          <Feather name="plus-square" size={20} color="#59578e" />
-          <TextInput
-            value={model}
-            onChangeText={text => { setModel(text) }}
-            placeholder='Modelo'
-            placeholderTextColor='#666666'
-            style={styles.textInput}
-            autoCorrect={false}
-          />
-        </View>
+        <TextInputPattern
+          icon="plus-square"
+          typeIcon={typesIcon.Feather}
+          value={model}
+          onChangeText={text => { setModel(text) }}
+          placeholder='Modelo'
+          autoCorrect={false}
+        />
 
-        <View style={styles.action}>
-          <Feather name="square" size={20} color="#59578e" />
-          <TextInput
-            value={color}
-            onChangeText={text => { setColor(text) }}
-            placeholder='Cor'
-            placeholderTextColor='#666666'
-            style={styles.textInput}
-            autoCorrect={false}
-          />
-        </View>
+        <TextInputPattern
+          icon="square"
+          typeIcon={typesIcon.Feather}
+          value={color}
+          onChangeText={text => { setColor(text) }}
+          placeholder='Cor'
+          autoCorrect={false}
+        />
 
         <View style={styles.actionPinker}>
 
@@ -139,28 +126,19 @@ const Car = ({ route }) => {
           </Picker>
         </View>
 
-        <View style={styles.action}>
-          <Ionic name="clipboard-outline" size={20} color="#59578e" />
-          <TextInput
-            value={licensePlate}
-            onChangeText={text => { setLicensePlate(text) }}
-            placeholder='Placa'
-            placeholderTextColor='#666666'
-            style={styles.textInput}
-            autoCorrect={false}
-            maxLength={7}
-          />
+        <TextInputPattern
+          icon="clipboard-outline"
+          typeIcon={typesIcon.Ionic}
+          value={licensePlate}
+          onChangeText={text => { setLicensePlate(text) }}
+          placeholder='Placa'
+          autoCorrect={false}
+          maxLength={7}
+        />
+
+        <View style={{ marginTop: 10, marginBottom: 30 }}>
+          <ButtonComponent text="Salvar" onPress={handleSubmit} disabled={disabled}  />
         </View>
-
-        <TouchableOpacity
-          activeOpacity={0.5}
-          disabled={disabled}
-          style={[styles.commandButton, disabled ? { backgroundColor: '#dddde8' } : { backgroundColor: '#59578e' }]}
-          onPress={handleSubmit}>
-
-          <Text style={styles.panelButtonTitle}> Salvar </Text>
-
-        </TouchableOpacity>
 
       </View>
     </View>
@@ -177,14 +155,6 @@ const styles = StyleSheet.create({
   area: {
     padding: 20,
   },
-  action: {
-    flexDirection: 'row',
-    marginTop: 5,
-    marginBottom: 5,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f2f2f2',
-    paddingBottom: 5,
-  },
   actionPinker: {
     marginTop: 5,
     marginBottom: 5,
@@ -193,22 +163,5 @@ const styles = StyleSheet.create({
     paddingBottom: 5,
     flexDirection: 'row',
     alignItems: 'center'
-  },
-  textInput: {
-    marginTop: Platform.OS === 'ios' ? 0 : -12,
-    paddingLeft: 10,
-    color: '#59578e',
-    width: '100%'
-  },
-  panelButtonTitle: {
-    fontSize: 17,
-    fontWeight: 'bold',
-    color: 'white',
-  },
-  commandButton: {
-    padding: 13,
-    borderRadius: 10,
-    alignItems: 'center',
-    marginTop: 10,
   },
 });
