@@ -1,10 +1,9 @@
 import React, { useContext, useEffect } from 'react';
 import { View, SafeAreaView, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
 import { Avatar, Title, Caption, Text, TouchableRipple } from 'react-native-paper';
-import Icon from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
-import Material from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native';
+import ButtonCustom, { typesIcon } from '../../components/ButtonCustom';
 
 import { AuthContext } from '../../contexts/auth';
 
@@ -75,44 +74,36 @@ export default function Profile() {
                 <Caption> Estacionamentos visitados </Caption>
               </View>
             </View>
-            <View>
-              <View style={styles.menuWrapper}>
-                <View style={{ width: '50%', alignItems: 'center' }}>
-                  <TouchableRipple onPress={() => { }} style={styles.buttonStyle}>
 
-                    <View style={styles.menuItem}>
-                      <View style={styles.iconItem}>
-                        <Feather name="heart" color="#59578e" size={30} />
-                      </View>
-                      <Text style={styles.menuItemText}>Estacionamentos favoritos</Text>
-                    </View>
-                  </TouchableRipple>
+            <View style={styles.menuWrapper}>
+              
+                <ButtonCustom
+                  text="Estacionamentos favoritos"
+                  typeIcon={typesIcon.Feather}
+                  icon="heart"
+                  onPress={() => { }}
+                />
 
-                  <TouchableRipple
-                    onPress={() => { navigation.navigate('CreditCardList') }}
-                    style={styles.buttonStyle}>
-                    <View style={styles.menuItem}>
-                      <View style={styles.iconItem}>
-                        <Icon name="credit-card" color="#59578e" size={30} />
-                      </View>
-                      <Text style={styles.menuItemText}>Formas de pagamento</Text>
-                    </View>
-                  </TouchableRipple>
+                <ButtonCustom
+                  text="Formas de pagamento"
+                  typeIcon={typesIcon.FontAwesome}
+                  icon="credit-card"
+                  onPress={() => { navigation.navigate('CreditCardList') }}
+                />
 
-                </View>
-                <View style={{ width: '50%', alignItems: 'center' }}>
+                <ButtonCustom
+                  text="Meu Carro"
+                  typeIcon={typesIcon.MaterialCommunityIcons}
+                  icon="car-back"
+                  onPress={() => { navigation.navigate('CarList') }}
+                />
 
-                  <TouchableRipple onPress={() => { navigation.navigate('CarList') }} style={styles.buttonStyle}>
-                    <View style={styles.menuItem}>
-                      <View style={styles.iconItem}>
-                        <Material name="car-back" color="#59578e" size={30} />
-                      </View>
-                      <Text style={styles.menuItemText}>Meu Carro</Text>
-                    </View>
-                  </TouchableRipple>
-
-                </View>
-              </View>
+                <ButtonCustom
+                  text="Meu endereço"
+                  typeIcon={typesIcon.MaterialCommunityIcons}
+                  icon="home-map-marker"
+                  onPress={() => { }}
+                />
             </View>
           </ScrollView>
         </View>
@@ -134,11 +125,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-  },
-  caption: {
-    fontSize: 14,
-    lineHeight: 24,
-    fontWeight: "500",
   },
   row: {
     flexDirection: 'row',
@@ -162,23 +148,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     flexDirection: 'row',
     flexWrap: 'wrap',
-    alignItems: 'flex-start',
-  },
-  menuItem: {
-    flexDirection: 'column',
-    padding: 10,
-  },
-  menuItemText: {
-    color: '#5E5E5E',
-    fontWeight: '600',
-    fontSize: 16,
-    lineHeight: 26,
-    alignItems: 'flex-start',
-    marginTop: 10,
-    fontWeight: "bold",
-  },
-  colorPattern: {
-    color: '#59578e',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingLeft: 10,
+    paddingRight: 10,
   },
   colorOptional: {
     color: '#777777',
@@ -203,22 +176,4 @@ const styles = StyleSheet.create({
     marginTop: 15,
     alignItems: 'center',
   },
-  buttonStyle: {
-    width: 160,
-    height: 150,
-    margin: 10,
-    backgroundColor: 'hsl(242,24%,90%)',
-    borderRadius: 15,
-  },
-  iconItem: {
-    backgroundColor: 'hsl(242,24%,80%)',
-    padding: 8,
-    borderRadius: 20,
-    width: 49
-  },
-  itemSelected: {
-    borderWidth: 1,
-    borderColor: '#59578e',
-    elevation: 15,
-  }
 });

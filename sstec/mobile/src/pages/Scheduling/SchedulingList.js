@@ -1,5 +1,4 @@
 import React from 'react';
-
 import SchedulingPrevious from './SchedulingPrevious';
 import SchedulingProgress from './SchedulingProgress';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';

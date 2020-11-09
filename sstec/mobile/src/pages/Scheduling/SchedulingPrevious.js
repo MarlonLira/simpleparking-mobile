@@ -4,12 +4,12 @@ import {
   Text,
   StyleSheet 
 } from 'react-native';
-
-// import { Container } from './styles';
+import StatusBarComponent from '../../components/StatusBar';
 
 const SchedulingPrevious = () => {
   return (
     <View style={styles.container}>
+      <StatusBarComponent />
       <Text>SchedulingPrevious</Text>
     </View>
   );

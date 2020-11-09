@@ -1,4 +1,5 @@
 import React, { useEffect, useContext } from 'react';
+import { useIsFocused } from '@react-navigation/native';
 import {
   View,
   StyleSheet,
@@ -16,43 +17,46 @@ import { useDispatch, useSelector } from 'react-redux';
 const SchedulingProgress = () => {
 
   const { profile, scheduling } = useSelector(state => state);
+  const isFocused = useIsFocused();
   const { user } = useContext(AuthContext);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(SchedulingActions.schedulingRequest(user.id));
-  }, [])
+    if (isFocused) {
+      dispatch(SchedulingActions.schedulingRequest(user.id));
+    }
+  }, [isFocused])
 
-  const RenderList = () => {
-
-    return (
-      <FlatList
-        showsVerticalScrollIndicator={false}
-        data={scheduling.schedulings.reverse()}
-        keyExtractor={item => item.id.toString()}
-        renderItem={({ item }) => (
-          <ListScheduling
-            data={item}
-          />
-        )}
-      >
-      </FlatList>
-    )
-  };
+const RenderList = () => {
 
   return (
-    <View style={styles.container}>
-      {scheduling.request ?
-        <View style={styles.loading}>
-          <ActivityIndicator size='large' color='#59578e' />
-        </View>
-        :
-        <View>
-          <RenderList />
-        </View>
-      }
-    </View>
-  );
+    <FlatList
+      showsVerticalScrollIndicator={false}
+      data={scheduling.schedulings.reverse()}
+      keyExtractor={item => item.id.toString()}
+      renderItem={({ item }) => (
+        <ListScheduling
+          data={item}
+        />
+      )}
+    >
+    </FlatList>
+  )
+};
+
+return (
+  <View style={styles.container}>
+    {scheduling.request ?
+      <View style={styles.loading}>
+        <ActivityIndicator size='large' color='#59578e' />
+      </View>
+      :
+      <View>
+        <RenderList />
+      </View>
+    }
+  </View>
+);
 }
 
 export default SchedulingProgress;

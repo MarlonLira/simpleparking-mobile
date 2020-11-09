@@ -13,7 +13,7 @@ const Search = () => {
           console.log(data, details);
         }}
         query={{
-          key: "AIzaSyCElO0LOIBsmGNwhFZNegzZJg",
+          key: "AIzaSyB8C6ha7nL1IPG4-QmdhzeJifEaBJhzKWc",
           language: "pt-BR",
         }}
         textInputProps={{

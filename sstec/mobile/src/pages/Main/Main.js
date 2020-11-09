@@ -17,11 +17,9 @@ import Geolocation from 'react-native-geolocation-service';
 import { useNavigation } from '@react-navigation/native'
 import { useSelector, useDispatch } from 'react-redux';
 import { Creators as MapActions } from '../../store/ducks/map';
-import Icon from 'react-native-vector-icons/Ionicons';
-
 import Search from '../../components/Search';
 
-const GOOGLE_MAPS_APIKEY = "AIzaSyCElO0LOIBsmGNwhFZNegzZJg";
+const GOOGLE_MAPS_APIKEY = "AIzaSyB8C6ha7nL1IPG4-QmdhzeJifEaBJhzKWc";
 const backgroundColor = '#007256';
 const { height, width } = Dimensions.get('window');
 const CARD_HEIGHT = 250;
