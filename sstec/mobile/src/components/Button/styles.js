@@ -1,15 +1,14 @@
 import styled from 'styled-components/native';
 
 export const Container = styled.View`
-  flex: 1;
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  margin-top: 20px;
+  margin-top: 10px;
 `;
 
 export const SubmitButton = styled.TouchableOpacity`
-  padding: 13px;
+  padding: 15px;
   border-radius: 10px;
   background-color: #59578e;
   align-items: center;

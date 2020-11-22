@@ -31,12 +31,12 @@ export const typesIcon = {
 const returnTypeIcon = (typeIcon, icon) => {
   switch (typeIcon) {
     case typesIcon.Feather:
-      return <Feather name={icon} size={30} color="#59578e" />
+      return <Feather name={icon} size={25} color="#59578e" />
     case typesIcon.FontAwesome:
-      return <FontAwesome name={icon} size={30} color="#59578e" />
+      return <FontAwesome name={icon} size={25} color="#59578e" />
     case typesIcon.MaterialCommunityIcons:
-      return <MaterialCommunityIcons name={icon} size={30} color="#59578e" />
+      return <MaterialCommunityIcons name={icon} size={25} color="#59578e" />
     case typesIcon.Ionic:
-      return <Ionic name={icon} size={30} color="#59578e" />
+      return <Ionic name={icon} size={25} color="#59578e" />
   }
 }

@@ -10,7 +10,7 @@ export const Container = styled.View`
 `;
 
 export const Card = styled.View`
-  min-height: 200px;
+  min-height: 300px;
   padding: 15px;
 `;
 
@@ -86,9 +86,14 @@ export const CardFooter = styled.View`
 export const CardButton = styled.TouchableOpacity`
   align-items: center;
   justify-content: center;
-  width: 50%;
+  width: 100%;
+  border-width: 1px;
+  border-color: #59578e;
+  border-radius: 10px;
+  margin-top: 5px;
 `
 export const TextButton = styled.Text`
   font-size: 14px;
-  color: #59578e ;
+  color: #59578e;
+  font-weight: bold;
 `

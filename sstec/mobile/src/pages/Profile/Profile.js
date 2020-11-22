@@ -146,12 +146,6 @@ const styles = StyleSheet.create({
   },
   menuWrapper: {
     backgroundColor: '#fff',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingLeft: 10,
-    paddingRight: 10,
   },
   colorOptional: {
     color: '#777777',

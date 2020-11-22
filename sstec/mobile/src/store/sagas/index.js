@@ -33,6 +33,7 @@ export default function* rootSaga() {
 
     takeLatest(SchedulingTypes.SCHEDULING_INCLUDE, includeScheduling),
     takeLatest(SchedulingTypes.SCHEDULING_REQUEST, getScheduling),
+    takeLatest(SchedulingTypes.SCHEDULING_EDIT, editScheduling),
   ]);
 };
 
@@ -279,5 +280,18 @@ function* getScheduling(action) {
 
   } catch (error) {
     AlertDialog('Erro', error.response.data.message, ['OK']);
+  }
+}
+
+function* editScheduling(action) {
+  try {
+
+    const { values } = action.payload;
+    const response = yield call(getApi.put, '/scheduling/', values);
+    yield put(SchedulingAction.schedulingSuccessEdit());
+
+  } catch (error) {
+    AlertDialog('Erro', error.response.data.message, ['OK']);
+    yield put(SchedulingAction.schedulingErrorEdit());
   }
 }

@@ -87,6 +87,8 @@ target 'simpleParking' do
 
   pod 'BVLinearGradient', :path => '../node_modules/react-native-linear-gradient'
 
+  pod 'RNPermissions', :path => '../node_modules/react-native-permissions'
+
   target 'simpleParkingTests' do
     inherit! :complete
     # Pods for testing

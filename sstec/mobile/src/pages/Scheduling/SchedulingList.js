@@ -20,20 +20,21 @@ const SchedulingList = () => {
     >
       <Tab.Screen
         options={{
-          title: "Anteriores"
-        }}
-        name="SchedulingPrevious"
-        component={SchedulingPrevious}
-      />
-
-      <Tab.Screen
-        options={{
           title: "Em andamento"
         }}
         name="SchedulingProgress"
         component={SchedulingProgress}
       />
+
+      <Tab.Screen
+        options={{
+          title: "Anteriores"
+        }}
+        name="SchedulingPrevious"
+        component={SchedulingPrevious}
+      />
     </Tab.Navigator>
+
   );
 }
 

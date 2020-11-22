@@ -188,15 +188,20 @@ const EditProfile = () => {
         <Text style={styles.panelTitle}> Upload foto </Text>
         <Text style={styles.panelSubtitle}> Selecione sua foto preferida </Text>
       </View>
-      <View style={{ marginTop: 10, marginBottom: 30 }}>
-        <ButtonComponent text="Tirar foto" onPress={() => { setShowCamera(true) }} />
-      </View>
-      <View style={{ marginTop: 10, marginBottom: 30 }}>
-        <ButtonComponent text="Escolha da Biblioteca" onPress={openLibrary} />
-      </View>
-      <View style={{ marginTop: 10, marginBottom: 30 }}>
-        <ButtonComponent text="Cancelar" onPress={() => setShow(false)} />
-      </View>
+
+      <ButtonComponent 
+        text="Tirar foto" 
+        onPress={() => { setShowCamera(true) }} 
+      />
+      <ButtonComponent 
+        text="Escolha da Biblioteca" 
+        onPress={openLibrary} 
+      />
+      <ButtonComponent 
+        text="Cancelar" 
+        onPress={() => setShow(false)} 
+      />
+
     </View>
   );
 

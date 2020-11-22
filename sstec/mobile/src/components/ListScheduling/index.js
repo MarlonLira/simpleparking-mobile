@@ -19,14 +19,27 @@ import {
   TextButton,
 } from './styles';
 
-const ListScheduling = ({ data, handleHelp, handleDetails }) => {
+const ListScheduling = ({ data, handleHelp, handleActivate }) => {
 
   const renderDate = (date) => {
-    var year = date.substring(0,4);
+    var year = date.substring(0, 4);
     var month = date.substring(5, 7);
     var day = date.substring(8, 10)
-    
+
     return `${day}/${month}/${year}`;
+  }
+
+  const getData = (value) => {
+    switch(value){
+      case 'PD':
+        return 'Pendente';
+      case 'AT': 
+        return 'Ativo';
+      case 'EX':
+        return 'Excluído';
+      default:
+        return '';
+    }
   }
 
   return (
@@ -42,7 +55,12 @@ const ListScheduling = ({ data, handleHelp, handleDetails }) => {
           <CardBodyCustom>
 
             <ValueItem>
-              <TextValue>Vaga</TextValue>
+              <TextValue>Status</TextValue>
+              <DescriptionValue>{getData(data.status)}</DescriptionValue>
+            </ValueItem>
+
+            <ValueItem>
+              <TextValue>Valor vaga</TextValue>
               <DescriptionValue>R$ {data.value.toFixed(2)}</DescriptionValue>
             </ValueItem>
 
@@ -53,7 +71,7 @@ const ListScheduling = ({ data, handleHelp, handleDetails }) => {
 
             <ValueItem>
               <TextValue>Horário</TextValue>
-              <DescriptionValue>{data.avaliableTime.substring(0,5)} - {data.unavailableTime.substring(0,5)}</DescriptionValue>
+              <DescriptionValue>{data.avaliableTime.substring(0, 5)} - {data.unavailableTime.substring(0, 5)}</DescriptionValue>
             </ValueItem>
 
           </CardBodyCustom>
@@ -66,12 +84,8 @@ const ListScheduling = ({ data, handleHelp, handleDetails }) => {
 
         <CardFooter>
 
-          <CardButton activeOpacity={0.7} onPress={handleHelp}>
-            <TextButton>Ajuda</TextButton>
-          </CardButton>
-
-          <CardButton activeOpacity={0.7} onPress={handleDetails}>
-            <TextButton>Detalhes</TextButton>
+          <CardButton activeOpacity={0.7} onPress={handleActivate}>
+            <TextButton>Ativar vaga!</TextButton>
           </CardButton>
 
         </CardFooter>

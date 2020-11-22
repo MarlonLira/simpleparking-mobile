@@ -9,6 +9,10 @@ export const Types = {
   SCHEDULING_ERROR_INCLUDE: 'SCHEDULING_ERROR_INCLUDE',
   SCHEDULING_SUCCESS_INCLUDE: 'SCHEDULING_SUCCESS_INCLUDE',
 
+  SCHEDULING_EDIT: 'SCHEDULING_EDIT',
+  SCHEDULING_SUCCESS_EDIT: 'SCHEDULING_SUCCESS_EDIT',
+  SCHEDULING_ERROR_EDIT: 'SCHEDULING_ERROR_EDIT',
+
 };
 
 /**
@@ -19,22 +23,41 @@ const INITIAL_STATE = {
   request: false,
   errorInclude: false,
   successInclude: false,
-  loading: false,
+  loading: true,
+  loadingEdit: false,
   notification: false,
+  errorEdit: false,
+  successEdit: false
 };
 
 export default function scheduling(state = INITIAL_STATE, action) {
   switch (action.type) {
     case Types.SCHEDULING_REQUEST:
-      return { ...state, request: true, loading: false, errorInclude: false, successInclude: false }
+      return {
+        ...state,
+        request: true,
+        errorInclude: false,
+        successInclude: false,
+        loading: true,
+        loadingEdit: false,
+        notification: false,
+        errorEdit: false,
+        successEdit: false
+      }
     case Types.SCHEDULING_DATA:
-      return { ...state, request: false, schedulings: action.payload, }
+      return { ...state, request: false, schedulings: action.payload, loading: false }
     case Types.SCHEDULING_INCLUDE:
       return { ...state, loading: true, errorInclude: false, successInclude: false }
     case Types.SCHEDULING_ERROR_INCLUDE:
       return { ...state, loading: false, errorInclude: true, successInclude: false }
     case Types.SCHEDULING_SUCCESS_INCLUDE:
       return { ...state, loading: false, errorInclude: false, successInclude: true, notification: true, }
+    case Types.SCHEDULING_EDIT:
+      return { ...state, loadingEdit: true, errorEdit: false, successEdit: false }
+    case Types.SCHEDULING_ERROR_EDIT:
+      return { ...state, loadingEdit: false, errorEdit: true, successEdit: false }
+    case Types.SCHEDULING_SUCCESS_EDIT:
+      return { ...state, loadingEdit: false, errorEdit: false, successEdit: true }
     default:
       return state;
   };
@@ -69,5 +92,19 @@ export const Creators = {
 
   schedulingSuccessInclude: () => ({
     type: Types.SCHEDULING_SUCCESS_INCLUDE,
+  }),
+
+  //actions PUT
+  schedulingEdit: values => ({
+    type: Types.SCHEDULING_EDIT,
+    payload: { values }
+  }),
+
+  schedulingSuccessEdit: () => ({
+    type: Types.SCHEDULING_SUCCESS_EDIT,
+  }),
+
+  schedulingErrorEdit: () => ({
+    type: Types.SCHEDULING_ERROR_EDIT,
   }),
 };
