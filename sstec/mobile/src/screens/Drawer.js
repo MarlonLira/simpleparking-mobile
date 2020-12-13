@@ -20,7 +20,7 @@ export default function DrawerComponent(props) {
 
   useEffect(() => {
     setPhoto(profile.photoProfile);
-  }, [profile.photoProfile])
+  }, [profile.photoProfile]);
 
   return (
     <View style={{ flex: 1 }}>

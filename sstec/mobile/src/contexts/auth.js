@@ -5,7 +5,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import { Decrypt } from '../utils/crypto';
 import { AlertDialog } from '../utils/Functions';
 
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Creators as ProfileActions } from '../store/ducks/profile';
 
 export const AuthContext = createContext({});
@@ -71,6 +71,7 @@ function AuthProvider({ children }) {
         registryCode: data.user.registryCode,
         email: data.user.email,
         phone: data.user.phone,
+        token: data.token,
       };
     } else {
       _data = {
@@ -79,6 +80,7 @@ function AuthProvider({ children }) {
         registryCode: data.result.registryCode,
         email: data.result.email,
         phone: data.result.phone,
+        token: data.result.token,
       };
     };
     setUser(_data);

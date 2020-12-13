@@ -5,7 +5,8 @@ import scheduling  from './scheduling';
 import creditCard from './creditCard';
 import car from './car';
 import map from './map';
-import profileParking from './profileParking'
+import profileParking from './profileParking';
+import parkingProducts from './parkingProduct';
 
 export default combineReducers({
   profile,
@@ -14,4 +15,5 @@ export default combineReducers({
   car,
   map,
   profileParking,
+  parkingProducts,
 });

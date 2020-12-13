@@ -21,6 +21,7 @@ import BottomSheet from '../../components/BottomSheet';
 import ImagePiker from 'react-native-image-picker';
 import CameraRoll from '@react-native-community/cameraroll';
 import AsyncStorage from '@react-native-community/async-storage';
+import { Base64 } from '../../utils/Atob';
 
 import { useSelector, useDispatch } from 'react-redux';
 import { Creators as ProfileActions } from '../../store/ducks/profile';
@@ -46,7 +47,6 @@ const EditProfile = () => {
   const [show, setShow] = useState(false);
   const [showCamera, setShowCamera] = useState(false);
   const [typeCamera, setTypeCamera] = useState(RNCamera.Constants.Type.back);
-
 
   const { height } = Dimensions.get('window');
 
@@ -189,17 +189,17 @@ const EditProfile = () => {
         <Text style={styles.panelSubtitle}> Selecione sua foto preferida </Text>
       </View>
 
-      <ButtonComponent 
-        text="Tirar foto" 
-        onPress={() => { setShowCamera(true) }} 
+      <ButtonComponent
+        text="Tirar foto"
+        onPress={() => { setShowCamera(true) }}
       />
-      <ButtonComponent 
-        text="Escolha da Biblioteca" 
-        onPress={openLibrary} 
+      <ButtonComponent
+        text="Escolha da Biblioteca"
+        onPress={openLibrary}
       />
-      <ButtonComponent 
-        text="Cancelar" 
-        onPress={() => setShow(false)} 
+      <ButtonComponent
+        text="Cancelar"
+        onPress={() => setShow(false)}
       />
 
     </View>
@@ -227,9 +227,7 @@ const EditProfile = () => {
               borderWidth: 1
             }}>
               <ImageBackground
-                source={{
-                  uri: photo
-                }}
+                source={{ uri: `data:image/png;base64,${Base64.atob(profile.dataUser.image)}` }}
                 style={{ height: 100, width: 100 }}
                 imageStyle={{ borderRadius: 15 }}
               >
@@ -375,3 +373,4 @@ const styles = StyleSheet.create({
     top: 60,
   },
 });
+

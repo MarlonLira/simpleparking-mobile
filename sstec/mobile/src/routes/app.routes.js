@@ -59,8 +59,6 @@ const openScree = ({ navigation }) => {
           }
         }} />
 
-
-
       <StackCreate.Screen
         name="ProfileParking"
         component={ProfileParking}
@@ -75,7 +73,7 @@ const openScree = ({ navigation }) => {
         name="Scheduling"
         component={Scheduling}
         options={{
-          title: "", 
+          title: "",
           headerTintColor: standardColor
         }} />
 

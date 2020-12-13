@@ -32,15 +32,21 @@ export default function ProfileParking({ route }) {
   useEffect(() => {
     if (!isFocused) {
       dispatch(ProfileParkingAction.exitScreen());
+    } else {
+      RequestData();
     }
   }, [isFocused]);
 
   useEffect(() => {
+    RequestData();
+  }, [route.params.parking.id]);
+
+  const RequestData = () => {
     if (typeof route.params.parking.id !== "undefined") {
       dispatch(ProfileParkingAction.profileParkingRequestSpace(route.params.parking.id));
       dispatch(ProfileParkingAction.profileparkingrequest(route.params.parking.id));
     }
-  }, [route.params.parking.id]);
+  }
 
   const getTypeSpace = (type) => {
     switch (type) {

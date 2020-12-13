@@ -4,6 +4,7 @@ import { Avatar, Title, Caption, Text, TouchableRipple } from 'react-native-pape
 import Feather from 'react-native-vector-icons/Feather';
 import { useNavigation } from '@react-navigation/native';
 import ButtonCustom, { typesIcon } from '../../components/ButtonCustom';
+import { Base64 } from '../../utils/Atob';
 
 import { AuthContext } from '../../contexts/auth';
 
@@ -21,7 +22,6 @@ export default function Profile() {
   }, []);
 
   const { profile } = useSelector(state => state);
-
   return (
     <SafeAreaView style={styles.container}>
 
@@ -36,9 +36,7 @@ export default function Profile() {
               <View style={styles.userInfoSection}>
                 <View style={styles.startView}>
                   <Avatar.Image
-                    source={{
-                      uri: profile.photoProfile,
-                    }}
+                    source={{ uri: `data:image/png;base64,${Base64.atob(profile.dataUser.image)}` }}
                     size={90}
                     style={{ marginTop: -60, elevation: 15 }}>
                   </Avatar.Image>

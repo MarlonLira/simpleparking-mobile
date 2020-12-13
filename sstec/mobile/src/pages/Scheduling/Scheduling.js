@@ -13,12 +13,13 @@ import {
   ScrollView,
 } from 'react-native'
 import ButtonComponent from '../../components/Button';
-import {TextInputPattern, typesIcon } from '../../components/TextInput';
+import { TextInputPattern, typesIcon } from '../../components/TextInput';
 import Dialog from "react-native-dialog";
 import { Picker } from '@react-native-community/picker';
 import { DecryptValue } from '../../utils/crypto';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 import CustomProgressBar from '../../components/CustomProgressBar';
+import ParkingProduct from '../ParkingProduct/ParkingProduct';
 
 import { Creators as CarAction } from '../../store/ducks/car';
 import { Creators as CrediCardAction } from '../../store/ducks/creditCard';
@@ -57,6 +58,7 @@ export default function Scheduling({ route }) {
   const [space, setSpace] = useState('');
   const [parking, setParking] = useState({});
   const [validateForm, setValidadeForm] = useState(false);
+  const [visibleProduct, setVisibleProducts] = useState(false);
 
   LocaleConfig.locales['fr'] = {
     monthNames: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
@@ -78,6 +80,8 @@ export default function Scheduling({ route }) {
   const showDialogFinalTime = () => setVisibleFinalTime(true);
 
   const hideDialogFinalTime = () => setVisibleFinalTime(false);
+
+  const handleCloseButton = () => setVisibleProducts(false);
 
   useEffect(() => {
     dispatch(CarAction.carRequest(user.id));
@@ -167,6 +171,7 @@ export default function Scheduling({ route }) {
       && typeof vehicleSchedule.type != "undefined"
       && parking != {}
       && typeof cCardSchedule.id != "undefined") {
+      setVisibleProducts(true);
       setValidadeForm(true);
     }
   }, [
@@ -368,6 +373,8 @@ export default function Scheduling({ route }) {
           </View>
         </View>
 
+        <ButtonComponent text="Adicione um serviço" onPress={() => setVisibleProducts(true)} />
+        
         <View style={{ marginTop: 10, marginBottom: 30 }}>
           <ButtonComponent text="Finalizar agendamento" onPress={handleButton} disabled={!validateForm} />
         </View>
@@ -401,6 +408,14 @@ export default function Scheduling({ route }) {
         <RenderCalendar />
         <RenderStartTime />
         <RenderFinalTime />
+        {visibleProduct ? 
+          <ParkingProduct 
+            idParking={parking.id} 
+            visible={visibleProduct}
+            handleCloseButton={handleCloseButton}
+            /> 
+        : null }
+        
 
       </ScrollView>
       {/* } */}

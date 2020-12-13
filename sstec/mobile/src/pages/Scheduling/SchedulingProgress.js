@@ -33,7 +33,6 @@ const SchedulingProgress = () => {
   }, []);
 
   useEffect(() => {
-    console.log(scheduling.successEdit);
     if (scheduling.successEdit) {
       setShowDialog(true);
       dispatch(SchedulingActions.schedulingRequest(user.id));
@@ -116,7 +115,7 @@ const SchedulingProgress = () => {
         :
         <View>
           <RenderList />
-          
+
           <ScanQrCode
             onSuccess={onSuccessScan}
             showScan={showScan}

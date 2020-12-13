@@ -23,7 +23,7 @@ const INITIAL_STATE = {
   request: false,
   errorInclude: false,
   successInclude: false,
-  loading: true,
+  loading: false,
   loadingEdit: false,
   notification: false,
   errorEdit: false,

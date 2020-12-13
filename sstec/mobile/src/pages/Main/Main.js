@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import {
   View,
   Text,
@@ -17,15 +17,15 @@ import Geolocation from 'react-native-geolocation-service';
 import { useNavigation } from '@react-navigation/native'
 import { useSelector, useDispatch } from 'react-redux';
 import { Creators as MapActions } from '../../store/ducks/map';
-import Search from '../../components/Search';
+import { AuthContext } from '../../contexts/auth';
+import { Creators as ProfileActions } from '../../store/ducks/profile';
 
-const GOOGLE_MAPS_APIKEY = "AIzaSyB8C6ha7nL1IPG4-QmdhzeJifEaBJhzKWc";
+const GOOGLE_MAPS_APIKEY = "AIzaSyDJqW2K_kNJFZwyrOz9ONnf5YEcCOm9DVU";
 const backgroundColor = '#007256';
 const { height, width } = Dimensions.get('window');
 const CARD_HEIGHT = 250;
 const CARD_WIDTH = width * 0.8;
 const SPACING_FOR_CARD_INSET = width * 0.1 - 10;
-
 
 export default function Main() {
 
@@ -37,6 +37,7 @@ export default function Main() {
 
   const dispatch = useDispatch();
   const { map } = useSelector(state => state);
+  const { user } = useContext(AuthContext);
   const navigation = useNavigation();
   const _map = React.useRef(null);
 
@@ -62,6 +63,10 @@ export default function Main() {
   const _keyboardDidHide = () => {
     setScroll(true);
   };
+
+  useEffect(() => {
+    dispatch(ProfileActions.getToken(user.token));
+  }, []);
 
   useEffect(() => {
     mapAnimation.addListener(({ value }) => {
@@ -187,18 +192,20 @@ export default function Main() {
               }
             ]
           }
-          let locale = { latitude: parseFloat(parking.address.latitude), longitude: parseFloat(parking.address.longitude) }
-          return (
-            <MapView.Marker key={index} coordinate={locale} onPress={(e) => onMarkerPress(e)}>
-              <Animated.View style={[styles.markerWrap]}>
-                <Animated.Image
-                  source={require('../../Images/marker.png')}
-                  style={[styles.marker, scaleStyle]}
-                >
-                </Animated.Image>
-              </Animated.View>
-            </MapView.Marker>
-          )
+          if (parking.address.latitude != null && typeof parking.address.longitude != null) {
+            let locale = { latitude: parseFloat(parking.address.latitude), longitude: parseFloat(parking.address.longitude) }
+            return (
+              <MapView.Marker key={index} coordinate={locale} onPress={(e) => onMarkerPress(e)}>
+                <Animated.View style={[styles.markerWrap]}>
+                  <Animated.Image
+                    source={require('../../Images/marker.png')}
+                    style={[styles.marker, scaleStyle]}
+                  >
+                  </Animated.Image>
+                </Animated.View>
+              </MapView.Marker>
+            )
+          }
         }
       })
     );
@@ -282,9 +289,9 @@ export default function Main() {
                 resizeMode="cover"
               />
               <View style={styles.textContent}>
-                <Text numberOfLines={1} style={styles.cardtitle} >{parking?.name}</Text>
-                <Text numberOfLines={1} style={styles.cardDescription} >{parking?.name}</Text>
-                <Text numberOfLines={1} style={styles.cardDescription} >{parking.address?.street + ', ' + parking.address?.number + ', ' + parking.address?.district}</Text>
+                <Text numberOfLines={1} style={styles.cardtitle}>{parking?.name}</Text>
+                <Text numberOfLines={1} style={styles.cardDescription}>{parking?.name}</Text>
+                <Text numberOfLines={1} style={styles.cardDescription}>{parking.address?.street + ', ' + parking.address?.number + ', ' + parking.address?.district}</Text>
                 <View style={styles.button}>
                   <TouchableOpacity
                     onPress={() => navigation.navigate('ProfileParking', { parking })}
@@ -321,7 +328,7 @@ export default function Main() {
       <RenderMap />
 
       {/* <Search onSubmitEditing={Keyboard.dismiss} /> */}
-      
+
       <RenderScroll />
 
     </View>
@@ -461,4 +468,19 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
   },
+  annotationContainer: {
+    width: 30,
+    height: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'white',
+    borderRadius: 15,
+  },
+  annotationFill: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: '#7159C1',
+    transform: [{ scale: 0.8 }],
+  }
 });

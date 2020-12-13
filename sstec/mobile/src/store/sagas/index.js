@@ -1,5 +1,4 @@
 import React from 'react';
-
 import { all, takeLatest, call, put, select } from 'redux-saga/effects';
 import getApi from '../../services/getApi';
 import { AlertDialog } from '../../utils/Functions';
@@ -10,6 +9,7 @@ import { Creators as CarActions, Types as CarTypes } from '../ducks/car';
 import { Creators as MapActions, Types as MapATypes } from '../ducks/map';
 import { Creators as ProfileParkingAction, Types as ProfileParkingTypes } from '../ducks/profileParking';
 import { Creators as SchedulingAction, Types as SchedulingTypes } from '../ducks/scheduling';
+import { Creators as ParkingProductAction, Types as ParkingProductTypes } from '../ducks/parkingProduct';
 
 export default function* rootSaga() {
   return yield all([
@@ -34,6 +34,8 @@ export default function* rootSaga() {
     takeLatest(SchedulingTypes.SCHEDULING_INCLUDE, includeScheduling),
     takeLatest(SchedulingTypes.SCHEDULING_REQUEST, getScheduling),
     takeLatest(SchedulingTypes.SCHEDULING_EDIT, editScheduling),
+
+    takeLatest(ParkingProductTypes.PRODUCT_REQUEST, getProducts),
   ]);
 };
 
@@ -42,10 +44,9 @@ export default function* rootSaga() {
  */
 function* editUser(action) {
   try {
-
-
+    const { profile } = yield select();
     const { values } = action.payload;
-    const response = yield call(getApi.put, `/user/`, values);
+    const response = yield call(getApi.put, `/user?token=${profile.token}`, values);
     yield put(ProfileActions.editSuccess());
     yield put(ProfileActions.offEdit());
     yield put(ProfileActions.getUserRequest(values.id));
@@ -59,10 +60,11 @@ function* editUser(action) {
 };
 
 function* getDataUser(action) {
+  
   try {
-
+    const { profile } = yield select();
     const id = action.payload;
-    const respone = yield call(getApi.get, `/user/${id}`);
+    const respone = yield call(getApi.get, `/user/${id}?token=${profile.token}`);
     yield put(ProfileActions.dataUser(respone.data.result));
 
   } catch (error) {
@@ -76,12 +78,11 @@ function* getDataUser(action) {
 
 function* includeCreditCard(action) {
   try {
-
+    const { profile } = yield select();
     const { values } = action.payload;
-    const respone = yield call(getApi.post, `/card/`, values);
+    const respone = yield call(getApi.post, `/card?token=${profile.token}`, values);
     yield put(CreditCardActions.creditCardSuccessInclude());
 
-    const { profile } = yield select();
     yield put(CreditCardActions.creditCardRequest(profile.dataUser.id));
 
     AlertDialog('Sucesso', 'Novo cartão cadastrado', ['OK']);
@@ -94,9 +95,9 @@ function* includeCreditCard(action) {
 
 function* getCreditCards(action) {
   try {
-
+    const { profile } = yield select();
     const id = action.payload;
-    const response = yield call(getApi.get, `/cards/userId/${id}`);
+    const response = yield call(getApi.get, `/cards/userId/${id}?token=${profile.token}`);
     yield put(CreditCardActions.creditCardData(response.data.result));
 
   } catch (error) {
@@ -108,12 +109,10 @@ function* getCreditCards(action) {
 
 function* deleteCreditCard(action) {
   try {
-
-    const id = action.payload;
-    const response = yield call(getApi.delete, `/card/${id}`,);
-    yield put(CreditCardActions.creditCardDeleteSuccess());
-
     const { profile } = yield select();
+    const id = action.payload;
+    const response = yield call(getApi.delete, `/card/${id}?token=${profile.token}`,);
+    yield put(CreditCardActions.creditCardDeleteSuccess());
     yield put(CreditCardActions.creditCardRequest(profile.dataUser.id));
 
     AlertDialog('Sucesso', 'Cartão excluído!', ['OK']);
@@ -128,12 +127,11 @@ function* deleteCreditCard(action) {
 
 function* editCreditCard(action) {
   try {
-
+    const { profile } = yield select();
     const values = action.payload;
-    const respone = yield call(getApi.put, `/card/`, values.card);
+    const respone = yield call(getApi.put, `/card?token=${profile.token}`, values.card);
     yield put(CreditCardActions.creditCardEditItemSuccess());
 
-    const { profile } = yield select();
     yield put(CreditCardActions.creditCardRequest(profile.dataUser.id));
 
     AlertDialog('Sucesso', 'Dados alterados!', ['OK']);
@@ -153,7 +151,7 @@ function* includeCar(action) {
     const { values } = action.payload;
     const { profile } = yield select();
 
-    const respone = yield call(getApi.post, '/vehicle/', values);
+    const respone = yield call(getApi.post, `/vehicle?token=${profile.token}`, values);
 
     yield put(CarActions.carRequest(profile.dataUser.id));
     yield put(CarActions.carSuccessInclude());
@@ -168,9 +166,9 @@ function* includeCar(action) {
 
 function* getCars(action) {
   try {
-
+    const { profile } = yield select();
     const id = action.payload;
-    const response = yield call(getApi.get, `/vehicles/userId/${id}`);
+    const response = yield call(getApi.get, `/vehicles/userId/${id}?token=${profile.token}`);
     yield put(CarActions.carData(response.data.result));
 
   } catch (error) {
@@ -184,7 +182,7 @@ function* deleteCar(action) {
     const id = action.payload;
     const { profile } = yield select();
 
-    const response = yield call(getApi.delete, `/vehicles/${id}`);
+    const response = yield call(getApi.delete, `/vehicles/${id}?token=${profile.token}`);
     yield put(CarActions.carDeleteSuccess());
     yield put(CarActions.carRequest(profile.dataUser.id));
 
@@ -203,7 +201,7 @@ function* editCar(action) {
     const { profile } = yield select();
     const { values } = action.payload;
 
-    const request = yield call(getApi.put, '/vehicle/', values);
+    const request = yield call(getApi.put, `/vehicle?token=${profile.token}`, values);
 
     yield put(CarActions.carEdiItemSuccess());
     yield put(CarActions.carRequest(profile.dataUser.id));
@@ -222,7 +220,8 @@ function* editCar(action) {
  */
 function* getParkings(action) {
   try {
-    const response = yield call(getApi.get, `/parkings/`);
+    const { profile } = yield select();
+    const response = yield call(getApi.get, `/parkings?token=${profile.token}`);
     yield put(MapActions.mapData(response.data.result));
   } catch (error) {
     AlertDialog('Erro', error.response.data.message, ['OK']);
@@ -234,9 +233,9 @@ function* getParkings(action) {
  */
 function* getParkingspace(action) {
   try {
-
+    const { profile } = yield select();
     const id = action.payload;
-    const response = yield call(getApi.get, `/Parkingspace/parkingId/${id}`);
+    const response = yield call(getApi.get, `/Parkingspace/parkingId/${id}?token=${profile.token}`);
     yield put(ProfileParkingAction.spaceData(response.data.result));
 
   } catch (error) {
@@ -246,8 +245,9 @@ function* getParkingspace(action) {
 
 function* getProfile(action) {
   try {
+    const { profile } = yield select();
     const id = action.payload;
-    const response = yield call(getApi.get, `parking/${id}`);
+    const response = yield call(getApi.get, `parking/${id}?token=${profile.token}`);
     yield put(ProfileParkingAction.profileData(response.data.result));
   } catch (error) {
     AlertDialog('Erro', error.response.data.message, ['OK']);
@@ -260,8 +260,8 @@ function* getProfile(action) {
 function* includeScheduling(action) {
   try {
     const { values } = action.payload;
-    const respone = yield call(getApi.post, '/scheduling/', values);
-
+    const { profile } = yield select();
+    const respone = yield call(getApi.post, `/scheduling?token=${profile.token}`, values);
     yield put(SchedulingAction.schedulingSuccessInclude());
 
     AlertDialog('Sucesso', 'Agendamento realizado!', ['OK']);
@@ -273,9 +273,9 @@ function* includeScheduling(action) {
 
 function* getScheduling(action) {
   try {
-
+    const { profile } = yield select();
     const idUser = action.payload;
-    const respone = yield call(getApi.get, `/schedulings/userId/${idUser}`);
+    const respone = yield call(getApi.get, `/schedulings/userId/${idUser}?token=${profile.token}`);
     yield put(SchedulingAction.schedulingData(respone.data.result));
 
   } catch (error) {
@@ -285,13 +285,25 @@ function* getScheduling(action) {
 
 function* editScheduling(action) {
   try {
-
+    const { profile } = yield select();
     const { values } = action.payload;
-    const response = yield call(getApi.put, '/scheduling/', values);
+    const response = yield call(getApi.put, `/scheduling?token=${profile.token}`, values);
     yield put(SchedulingAction.schedulingSuccessEdit());
 
   } catch (error) {
     AlertDialog('Erro', error.response.data.message, ['OK']);
     yield put(SchedulingAction.schedulingErrorEdit());
+  }
+}
+
+function* getProducts(action) {
+  try {
+    const { profile } = yield select();
+    const idParking = action.payload;
+    const respone = yield call(getApi.get, `parkingProduct/parkingId/${idParking}?token=${profile.token}`);
+    yield put(ParkingProductAction.productData(respone.data.result));
+
+  } catch (error) {
+    AlertDialog('Erro', error.response.data.message, ['OK']);
   }
 }

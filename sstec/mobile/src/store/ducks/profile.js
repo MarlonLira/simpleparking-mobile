@@ -7,6 +7,7 @@ export const Types = {
     REQUEST: 'USER_REQUEST',
     DATA: 'DATA_USER',
     PHOTO: 'PHOTO_USER',
+    TOKEN: 'TOKEN_USER',
   },
   EDIT: {
     REQUEST: 'EDIT_REQUEST',
@@ -27,6 +28,7 @@ const INITIAL_STATE = {
   errorEdit: false,
   goBack: false,
   photoProfile: null,
+  token: '',
 };
 
 export default function profile(state = INITIAL_STATE, action) {
@@ -45,6 +47,8 @@ export default function profile(state = INITIAL_STATE, action) {
       return { ...state, goBack: false, }
     case Types.USER.PHOTO:
       return { ...state, photoProfile: action.payload }
+    case Types.USER.TOKEN:
+      return { ...state, token: action.payload }
     default:
       return state;
   };
@@ -69,6 +73,16 @@ export const Creators = {
     payload: { values },
   }),
 
+  getPhoto: (photo) => ({
+    type: Types.USER.PHOTO,
+    payload: photo,
+  }),
+
+  getToken: (token) => ({
+    type: Types.USER.TOKEN,
+    payload: token,
+  }),
+
   editSuccess: () => ({
     type: Types.EDIT.SUCCESS,
   }),
@@ -79,10 +93,5 @@ export const Creators = {
 
   offEdit: () => ({
     type: Types.EDIT.OFF_EDIT,
-  }),
-
-  getPhoto: (photo) => ({
-    type: Types.USER.PHOTO,
-    payload: photo,
   }),
 };

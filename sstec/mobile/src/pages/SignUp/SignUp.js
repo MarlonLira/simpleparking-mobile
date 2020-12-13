@@ -145,8 +145,7 @@ const SignUp = ({ navigation }) => {
 
   return (
 
-    <View style={styles.container}>
-      <ScrollView>
+    <ScrollView style={styles.container}>
         <StatusBar backgroundColor='#59578e' barStyle="light-content" />
         <View style={styles.header}>
           <Text style={styles.text_header}>Cadastre-se</Text>
@@ -378,8 +377,7 @@ const SignUp = ({ navigation }) => {
           </View>
 
         </Animatable.View>
-      </ScrollView>
-    </View>
+    </ScrollView>
   );
 };
 
