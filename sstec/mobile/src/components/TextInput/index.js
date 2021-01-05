@@ -5,6 +5,8 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import Ionic from 'react-native-vector-icons/Ionicons';
 import { Action, TextStandard, Label, InputMask } from './styles';
 
+const ColorIcon = '#000';
+
 export const TextInputPattern = ({
   value,
   onChangeText,
@@ -105,12 +107,12 @@ export const RemoveMask = (value, Type) => {
 const returnTypeIcon = (typeIcon, icon) => {
   switch (typeIcon) {
     case typesIcon.Feather:
-      return <Feather name={icon} size={20} color="#59578e" />
+      return <Feather name={icon} size={20} color={ColorIcon} />
     case typesIcon.FontAwesome:
-      return <FontAwesome name={icon} size={20} color="#59578e" />
+      return <FontAwesome name={icon} size={20} color={ColorIcon} />
     case typesIcon.MaterialCommunityIcons:
-      return <MaterialCommunityIcons name={icon} size={20} color="#59578e" />
+      return <MaterialCommunityIcons name={icon} size={20} color={ColorIcon} />
     case typesIcon.Ionic:
-      return <Ionic name={icon} size={20} color="#59578e" />
+      return <Ionic name={icon} size={20} color={ColorIcon} />
   }
 }

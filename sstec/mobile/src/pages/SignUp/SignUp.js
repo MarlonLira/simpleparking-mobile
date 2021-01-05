@@ -21,6 +21,8 @@ import { AlertDialog } from '../../utils/Functions';
 import { styles } from '../../components/Stylized'
 import { useTheme } from 'react-native-paper';
 
+import BackgroundUi from '../../components/BackgroundUi';
+import { TextInputPattern, TextInputMask, typesIcon } from '../../components/TextInput';
 
 const SignUp = ({ navigation }) => {
 
@@ -127,11 +129,11 @@ const SignUp = ({ navigation }) => {
       password != '' &&
       confirmPassword != '') {
       let values = {
-          name,
-          registryCode: RemoveMask(registryCode, Type.CPF),
-          phone: RemoveMask(phone, Type.PHONE),
-          email,
-          password,
+        name,
+        registryCode: RemoveMask(registryCode, Type.CPF),
+        phone: RemoveMask(phone, Type.PHONE),
+        email,
+        password,
       }
 
       signUp(values, 'post').then(() => {
@@ -144,241 +146,294 @@ const SignUp = ({ navigation }) => {
   }
 
   return (
+    <BackgroundUi>
+      <TextInputPattern
+        icon="user-o"
+        typeIcon={typesIcon.FontAwesome}
+        value={name}
+        onChangeText={(text) => setName(text)}
+        placeholder='Nome'
+        autoCorrect={false}
+        mask={false}
+        label="Nome"
+      />
 
-    <ScrollView style={styles.container}>
-        <StatusBar backgroundColor='#59578e' barStyle="light-content" />
-        <View style={styles.header}>
-          <Text style={styles.text_header}>Cadastre-se</Text>
-        </View>
-        <Animatable.View
-          animation="fadeInUpBig"
-          style={[styles.footer, {
-            backgroundColor: colors.background
-          }]}
-        >
-          <Text style={[styles.text_footer, {
-            color: colors.text
-          }]}>Nome</Text>
-          <View style={styles.action}>
-            <FontAwesome
-              name="user-o"
-              color={colors.text}
-              size={20}
-            />
-            <TextInput
-              placeholder="Informe seu Nome"
-              placeholderTextColor="#666666"
-              style={[styles.textInput, {
-                color: colors.text
-              }]}
-              autoCapitalize="none"
-              onChangeText={(text) => setName(text)}
-              onEndEditing={(e) => handleValidEmail(e.nativeEvent.text)}
-            />
-          </View>
+      <TextInputPattern
+        icon="at"
+        typeIcon={typesIcon.FontAwesome}
+        value={email}
+        onChangeText={(text) => setEmail(text)}
+        placeholder='Informe seu Email'
+        autoCorrect={false}
+        mask={false}
+        label="Email"
+      />
 
-          <Text style={[styles.text_footer, {
-            color: colors.text
-          }]}>Email</Text>
-          <View style={styles.action}>
-            <FontAwesome
-              name="at"
-              color={colors.text}
-              size={20}
-            />
-            <TextInput
-              placeholder="Informe seu Eemail"
-              placeholderTextColor="#666666"
-              style={[styles.textInput, {
-                color: colors.text
-              }]}
-              autoCapitalize="none"
-              onChangeText={(text) => setEmail(text)}
-              onEndEditing={(e) => handleValidUser(e.nativeEvent.text)}
-            />
-          </View>
-          {data.isValidUser ? null :
-            <Animatable.View animation="fadeInLeft" duration={500}>
-              <Text style={styles.errorMsg}>O Email de usuário deve ter no minímo 12 caracteres.</Text>
-            </Animatable.View>
-          }
+      <TextInputMask
+        icon="phone"
+        typeIcon={typesIcon.Feather}
+        typeMask={Type.CPF}
+        value={registryCode}
+        onChangeText={text => setRegistryCode(text)}
+        placeholder='Informe seu CPF'
+        keyboardType='number-pad'
+        autoCorrect={false}
+        maxLength={15}
+        label="CPF"
+      />
 
-          <Text style={[styles.text_footer, {
-            color: colors.text
-          }]}>CPF</Text>
-          <View style={styles.action}>
-            <FontAwesome
-              name="address-card-o"
-              color={colors.text}
-              size={20}
-            />
-            <InputMask
-              type={Type.CPF}
-              placeholder="Informe seu CPF"
-              placeholderTextColor="#666666"
-              style={[styles.textInput, {
-                color: colors.text
-              }]}
-              value={registryCode}
-              autoCapitalize="none"
-              onChangeText={(text) => setRegistryCode(text)}
-              maxLength={14}
-            />
-          </View>
+      <TextInputMask
+        icon="phone"
+        typeIcon={typesIcon.Feather}
+        typeMask={Type.PHONE}
+        value={phone}
+        onChangeText={text => setPhone(text)}
+        placeholder='Informe seu Telefone'
+        keyboardType='number-pad'
+        autoCorrect={false}
+        maxLength={15}
+        label="Telefone"
+      />
 
-          <Text style={[styles.text_footer, {
-            color: colors.text
-          }]}>Telefone</Text>
-          <View style={styles.action}>
-            <FontAwesome
-              name="phone"
-              color={colors.text}
-              size={20}
-            />
-            <InputMask
-              type={Type.PHONE}
-              placeholder="Informe seu Telefone"
-              placeholderTextColor="#666666"
-              style={[styles.textInput, {
-                color: colors.text
-              }]}
-              value={phone}
-              autoCapitalize="none"
-              onChangeText={(text) => setPhone(text)}
-              maxLength={15}
-            />
-          </View>
+    </BackgroundUi>
+  )
 
-          <Text style={[styles.text_footer, {
-            color: colors.text,
-          }]}>Senha</Text>
-          <View style={styles.action}>
-            <Feather
-              name="lock"
-              color={colors.text}
-              size={20}
-            />
-            <TextInput
-              placeholder="Informe sua senha"
-              placeholderTextColor="#666666"
-              secureTextEntry={data.secureTextEntry ? true : false}
-              style={[styles.textInput, {
-                color: colors.text
-              }]}
-              autoCapitalize="none"
-              onChangeText={(text) => {
-                setPassword(text);
-                handlePasswordChange(text);
-              }}
-            />
-            <TouchableOpacity
-              onPress={updateSecureTextEntry}
-            >
-              {data.secureTextEntry ?
-                <Feather
-                  name="eye-off"
-                  color="grey"
-                  size={20}
-                />
-                :
-                <Feather
-                  name="eye"
-                  color="grey"
-                  size={20}
-                />
-              }
-            </TouchableOpacity>
-          </View>
+  // return (
 
-          {data.isValidPassword ? null :
-            <Animatable.View animation="fadeInLeft" duration={500}>
-              <Text style={styles.errorMsg}>A senha deve ter no mínimo 6 caracteres.</Text>
-            </Animatable.View>
-          }
+  //   <ScrollView style={styles.container}>
+  //       <StatusBar backgroundColor='#59578e' barStyle="light-content" />
+  //       <View style={styles.header}>
+  //         <Text style={styles.text_header}>Cadastre-se</Text>
+  //       </View>
+  //       <Animatable.View
+  //         animation="fadeInUpBig"
+  //         style={[styles.footer, {
+  //           backgroundColor: colors.background
+  //         }]}
+  //       >
+  //         <Text style={[styles.text_footer, {
+  //           color: colors.text
+  //         }]}>Nome</Text>
+  //         <View style={styles.action}>
+  //           <FontAwesome
+  //             name="user-o"
+  //             color={colors.text}
+  //             size={20}
+  //           />
+  //           <TextInput
+  //             placeholder="Informe seu Nome"
+  //             placeholderTextColor="#666666"
+  //             style={[styles.textInput, {
+  //               color: colors.text
+  //             }]}
+  //             autoCapitalize="none"
+  //             onChangeText={(text) => setName(text)}
+  //             onEndEditing={(e) => handleValidEmail(e.nativeEvent.text)}
+  //           />
+  //         </View>
 
-          <Text style={[styles.text_footer, {
-            color: colors.text,
-          }]}>Confirmar senha</Text>
-          <View style={styles.action}>
-            <Feather
-              name="lock"
-              color={colors.text}
-              size={20}
-            />
-            <TextInput
-              placeholder="Confirme sua senha"
-              placeholderTextColor="#666666"
-              secureTextEntry={data.secureTextEntry ? true : false}
-              style={[styles.textInput, {
-                color: colors.text
-              }]}
-              autoCapitalize="none"
-              onChangeText={(text) => {
-                setConfirmPassword(text);
-                handleConfirmPasswordChange(text);
-              }}
-            />
-            <TouchableOpacity
-              onPress={updateSecureTextEntry}
-            >
-              {data.secureTextEntry ?
-                <Feather
-                  name="eye-off"
-                  color="grey"
-                  size={20}
-                />
-                :
-                <Feather
-                  name="eye"
-                  color="grey"
-                  size={20}
-                />
-              }
-            </TouchableOpacity>
-          </View>
+  //         <Text style={[styles.text_footer, {
+  //           color: colors.text
+  //         }]}>Email</Text>
+  //         <View style={styles.action}>
+  //           <FontAwesome
+  //             name="at"
+  //             color={colors.text}
+  //             size={20}
+  //           />
+  //           <TextInput
+  //             placeholder="Informe seu Eemail"
+  //             placeholderTextColor="#666666"
+  //             style={[styles.textInput, {
+  //               color: colors.text
+  //             }]}
+  //             autoCapitalize="none"
+  //             onChangeText={(text) => setEmail(text)}
+  //             onEndEditing={(e) => handleValidUser(e.nativeEvent.text)}
+  //           />
+  //         </View>
+  //         {data.isValidUser ? null :
+  //           <Animatable.View animation="fadeInLeft" duration={500}>
+  //             <Text style={styles.errorMsg}>O Email de usuário deve ter no minímo 12 caracteres.</Text>
+  //           </Animatable.View>
+  //         }
 
-          {data.isCorrespondingPassword ? null :
-            <Animatable.View animation="fadeInLeft" duration={500}>
-              <Text style={styles.errorMsg}>As senhas não correspondem!</Text>
-            </Animatable.View>
-          }
+  //         <Text style={[styles.text_footer, {
+  //           color: colors.text
+  //         }]}>CPF</Text>
+  //         <View style={styles.action}>
+  //           <FontAwesome
+  //             name="address-card-o"
+  //             color={colors.text}
+  //             size={20}
+  //           />
+  //           <InputMask
+  //             type={Type.CPF}
+  //             placeholder="Informe seu CPF"
+  //             placeholderTextColor="#666666"
+  //             style={[styles.textInput, {
+  //               color: colors.text
+  //             }]}
+  //             value={registryCode}
+  //             autoCapitalize="none"
+  //             onChangeText={(text) => setRegistryCode(text)}
+  //             maxLength={14}
+  //           />
+  //         </View>
 
-          <View style={styles.button}>
-            <TouchableOpacity
-              style={styles.signIn}
-              onPress={handleSignUp}
-            >
-              <LinearGradient
-                colors={['#59578e', '#59578e']}
-                style={styles.signIn}
-              >
-                {
-                  load.status ? <ActivityIndicator  size="large" color="#FFF" />
-                    :
-                    <Text style={[styles.textSign, {
-                      color: '#fff'
-                    }]}>Cadastrar</Text>
-                }
-              </LinearGradient>
-            </TouchableOpacity>
+  //         <Text style={[styles.text_footer, {
+  //           color: colors.text
+  //         }]}>Telefone</Text>
+  //         <View style={styles.action}>
+  //           <FontAwesome
+  //             name="phone"
+  //             color={colors.text}
+  //             size={20}
+  //           />
+  //           <InputMask
+  //             type={Type.PHONE}
+  //             placeholder="Informe seu Telefone"
+  //             placeholderTextColor="#666666"
+  //             style={[styles.textInput, {
+  //               color: colors.text
+  //             }]}
+  //             value={phone}
+  //             autoCapitalize="none"
+  //             onChangeText={(text) => setPhone(text)}
+  //             maxLength={15}
+  //           />
+  //         </View>
 
-            <TouchableOpacity
-              onPress={() => navigation.goBack()}
-              style={[styles.signIn, {
-                borderColor: '#59578e',
-                borderWidth: 1,
-                marginTop: 15
-              }]}
-            >
-              <Text style={[styles.textSign, {
-                color: '#59578e'
-              }]}>Voltar</Text>
-            </TouchableOpacity>
-          </View>
+  //         <Text style={[styles.text_footer, {
+  //           color: colors.text,
+  //         }]}>Senha</Text>
+  //         <View style={styles.action}>
+  //           <Feather
+  //             name="lock"
+  //             color={colors.text}
+  //             size={20}
+  //           />
+  //           <TextInput
+  //             placeholder="Informe sua senha"
+  //             placeholderTextColor="#666666"
+  //             secureTextEntry={data.secureTextEntry ? true : false}
+  //             style={[styles.textInput, {
+  //               color: colors.text
+  //             }]}
+  //             autoCapitalize="none"
+  //             onChangeText={(text) => {
+  //               setPassword(text);
+  //               handlePasswordChange(text);
+  //             }}
+  //           />
+  //           <TouchableOpacity
+  //             onPress={updateSecureTextEntry}
+  //           >
+  //             {data.secureTextEntry ?
+  //               <Feather
+  //                 name="eye-off"
+  //                 color="grey"
+  //                 size={20}
+  //               />
+  //               :
+  //               <Feather
+  //                 name="eye"
+  //                 color="grey"
+  //                 size={20}
+  //               />
+  //             }
+  //           </TouchableOpacity>
+  //         </View>
 
-        </Animatable.View>
-    </ScrollView>
-  );
+  //         {data.isValidPassword ? null :
+  //           <Animatable.View animation="fadeInLeft" duration={500}>
+  //             <Text style={styles.errorMsg}>A senha deve ter no mínimo 6 caracteres.</Text>
+  //           </Animatable.View>
+  //         }
+
+  //         <Text style={[styles.text_footer, {
+  //           color: colors.text,
+  //         }]}>Confirmar senha</Text>
+  //         <View style={styles.action}>
+  //           <Feather
+  //             name="lock"
+  //             color={colors.text}
+  //             size={20}
+  //           />
+  //           <TextInput
+  //             placeholder="Confirme sua senha"
+  //             placeholderTextColor="#666666"
+  //             secureTextEntry={data.secureTextEntry ? true : false}
+  //             style={[styles.textInput, {
+  //               color: colors.text
+  //             }]}
+  //             autoCapitalize="none"
+  //             onChangeText={(text) => {
+  //               setConfirmPassword(text);
+  //               handleConfirmPasswordChange(text);
+  //             }}
+  //           />
+  //           <TouchableOpacity
+  //             onPress={updateSecureTextEntry}
+  //           >
+  //             {data.secureTextEntry ?
+  //               <Feather
+  //                 name="eye-off"
+  //                 color="grey"
+  //                 size={20}
+  //               />
+  //               :
+  //               <Feather
+  //                 name="eye"
+  //                 color="grey"
+  //                 size={20}
+  //               />
+  //             }
+  //           </TouchableOpacity>
+  //         </View>
+
+  //         {data.isCorrespondingPassword ? null :
+  //           <Animatable.View animation="fadeInLeft" duration={500}>
+  //             <Text style={styles.errorMsg}>As senhas não correspondem!</Text>
+  //           </Animatable.View>
+  //         }
+
+  //         <View style={styles.button}>
+  //           <TouchableOpacity
+  //             style={styles.signIn}
+  //             onPress={handleSignUp}
+  //           >
+  //             <LinearGradient
+  //               colors={['#59578e', '#59578e']}
+  //               style={styles.signIn}
+  //             >
+  //               {
+  //                 load.status ? <ActivityIndicator  size="large" color="#FFF" />
+  //                   :
+  //                   <Text style={[styles.textSign, {
+  //                     color: '#fff'
+  //                   }]}>Cadastrar</Text>
+  //               }
+  //             </LinearGradient>
+  //           </TouchableOpacity>
+
+  //           <TouchableOpacity
+  //             onPress={() => navigation.goBack()}
+  //             style={[styles.signIn, {
+  //               borderColor: '#59578e',
+  //               borderWidth: 1,
+  //               marginTop: 15
+  //             }]}
+  //           >
+  //             <Text style={[styles.textSign, {
+  //               color: '#59578e'
+  //             }]}>Voltar</Text>
+  //           </TouchableOpacity>
+  //         </View>
+
+  //       </Animatable.View>
+  //   </ScrollView>
+  // );
 };
 
 export default SignUp;
